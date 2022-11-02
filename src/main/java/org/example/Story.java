@@ -18,6 +18,11 @@ public class Story implements Page {
         this.season = season;
     }
 
+    /**
+     *
+     * @return linkNames названия, соответствующие выбранной истории, будут использованы для создания ссылки
+     * @throws FileNotFoundException
+     */
     public HashMap<String, String> makeDictNames() throws FileNotFoundException {
         String path = "/Users/v/IdeaProjects/bot/data.txt";
         File file = new File(path);
@@ -38,6 +43,10 @@ public class Story implements Page {
         return linkNames;
     }
 
+    /**
+     * функция выводит на экран названия всех доступных историй
+     * @throws FileNotFoundException
+     */
     public void printTitles() throws FileNotFoundException {
         ArrayList<String> keys = new ArrayList<>(makeDictNames().keySet());
         for (String key : keys) System.out.println(key);
@@ -45,6 +54,11 @@ public class Story implements Page {
         System.out.println("Выбрать историю: ");
     }
 
+    /**
+     *
+     * @param link страница
+     * @return содержание страницы
+     */
     public String getPage(String link) {
         StringBuilder page = new StringBuilder();
         try {
@@ -61,6 +75,11 @@ public class Story implements Page {
         return page.toString();
     }
 
+    /**
+     * функция считывает информацию о количестве сезонов и количестве эпизодов в каждом сезоне
+     * @return map ключ - сезон, значение - массив эпизодов этого сезона
+     * @throws IOException
+     */
     public Map<String, ArrayList<String>> seasonsAndEpisodes() throws IOException {
         String page = getPage(makeLink());
 
@@ -82,8 +101,8 @@ public class Story implements Page {
         String element;
         while (array.size() != 0){
             element = array.remove(0);
-            String substr = element.substring(0, 5);
-            if (substr.equals("Сезон") && episodes.size() != 0 || array.size() == 0) {
+            String begin = element.substring(0, 5);
+            if (begin.equals("Сезон") && episodes.size() != 0 || array.size() == 0) {
                 if (array.size() == 0)
                     episodes.add(element);
                 map.put(episodes.remove(0), episodes);
@@ -94,6 +113,10 @@ public class Story implements Page {
         return map;
     }
 
+    /**
+     * функция выводит на экран количество доступных сезонов
+     * @throws IOException
+     */
     public void printSeasons() throws IOException {
         ArrayList<String> keys = new ArrayList<>(seasonsAndEpisodes().keySet());
         for (String key : keys) System.out.println(key);
@@ -101,6 +124,10 @@ public class Story implements Page {
         System.out.println("Выбрать сезон: ");
     }
 
+    /**
+     * функция выводит на экран количество и названия всех доступных эпизодов
+     * @throws IOException
+     */
     public void printEpisodes() throws IOException {
         ArrayList<String> values = seasonsAndEpisodes().get(season);
         for (String value : values) System.out.println(value);
@@ -109,6 +136,11 @@ public class Story implements Page {
 
     }
 
+    /**
+     *
+     * @return ссылка на страницу с информацией
+     * @throws FileNotFoundException
+     */
     public String makeLink() throws FileNotFoundException {
         return "https://gamesisart.ru/guide/" + makeDictNames().get(name) + ".html";
     }

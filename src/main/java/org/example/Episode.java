@@ -47,6 +47,10 @@ public class Episode extends Story implements Page {
         return link;
     }
 
+    /**
+     * функция считывает информацию со страницы и выводит ее в консоль
+     * @throws IOException
+     */
     public void extractActions() throws IOException {
         String page = getPage(makeLink());
         String firstTag = "<a name=\"Act_" + seasonNumber + "_" + episodeNumber;
