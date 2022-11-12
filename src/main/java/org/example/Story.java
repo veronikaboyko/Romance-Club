@@ -63,7 +63,7 @@ public class Story implements Page {
         StringBuilder page = new StringBuilder();
         try {
             URL url = new URL(link);
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "cp1251"));
             String inputLine;
             while ((inputLine = in.readLine()) != null)
                 page.append(inputLine);
