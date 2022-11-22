@@ -44,14 +44,26 @@ public class User {
 
         Story story = new Story();
         story.printTitles();
-        story.setName(scanner.nextLine());
+        while (true) {
+            if(story.setName(scanner.nextLine())){
+               break;
+            }
+        }
 
         story.seasonsAndEpisodes();
         story.printSeasons();
-        story.setSeason(scanner.nextLine());
+        while(true) {
+            if(story.setSeason(scanner.nextLine())){
+                break;
+            }
+        }
         story.printEpisodes();
-
-        Episode episode = new Episode(scanner.nextLine());
+        Episode episode = new Episode();
+        while(true) {
+            if(episode.setEpisode(scanner.nextLine())){
+                break;
+            }
+        }
         episode.extractActions();
 
     }
