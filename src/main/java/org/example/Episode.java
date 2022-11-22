@@ -10,8 +10,16 @@ public class Episode extends Story implements Page {
     private String episode;
     private String seasonNumber;
     private String episodeNumber;
-    public Episode(String episode){
-        this.episode = episode;
+    public boolean setEpisode(String episode){
+        try {
+            Integer.parseInt(episode);
+            this.episode = episode;
+            return true;
+        }
+        catch (NumberFormatException e){
+            System.out.println("Вы ввели не число");
+            return false;
+        }
     }
 
     public String getEpisode() {
