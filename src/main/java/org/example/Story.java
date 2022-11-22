@@ -10,12 +10,40 @@ public class Story implements Page {
     protected static String name;
     protected static String season;
 
-    public void setName(String Name){
-        this.name = Name;
+   public boolean setName(String Name) throws FileNotFoundException {
+        HashMap<String, String>linkCheck = makeDictNames();
+        boolean flag = false;
+        for (String key : linkCheck.keySet()){
+            if (Check(key,Name)){
+                flag = true;
+            }
+        }
+        if(flag) {
+            name = Name;
+            return true;
+        }
+        else {
+            System.out.println("Введите название из списка");
+            return false;
+        }
     }
 
-    public void setSeason(String season){
-        this.season = season;
+    public boolean setSeason(String season) throws IOException {
+        Map<String, ArrayList<String>> linkCheck = seasonsAndEpisodes();
+        boolean flag = false;
+        for (String key : linkCheck.keySet()){
+            if (Check(key,season)){
+                flag = true;
+            }
+        }
+        if(flag) {
+            Story.season = season;
+            return true;
+        }
+        else{
+            System.out.println("Введите название из списка");
+            return false;
+        }
     }
 
     /**
