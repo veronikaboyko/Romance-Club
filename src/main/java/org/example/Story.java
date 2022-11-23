@@ -1,4 +1,6 @@
-package org.example;
+package org.example.model;
+
+
 
 import java.io.*;
 import java.net.URL;
@@ -10,16 +12,44 @@ public class Story implements Page {
     protected static String name;
     protected static String season;
 
-    public void setName(String Name){
-        this.name = Name;
+    public boolean setName(String Name) throws FileNotFoundException {
+        HashMap<String, String>linkCheck = makeDictNames();
+        boolean flag = false;
+        for (String key : linkCheck.keySet()){
+            if (Check(key,Name)){
+                flag = true;
+            }
+        }
+        if(flag) {
+            name = Name;
+            return true;
+        }
+        else {
+            System.out.println("Введите название из списка");
+            return false;
+        }
     }
 
-    public void setSeason(String season){
-        this.season = season;
+    public boolean setSeason(String season) throws IOException {
+        Map<String, ArrayList<String>> linkCheck = seasonsAndEpisodes();
+        boolean flag = false;
+        for (String key : linkCheck.keySet()){
+            if (Check(key,season)){
+                flag = true;
+            }
+        }
+        if(flag) {
+            Story.season = season;
+            return true;
+        }
+        else{
+            System.out.println("Введите название из списка");
+            return false;
+        }
     }
 
     public HashMap<String, String> makeDictNames() throws FileNotFoundException {
-        String path = "/Users/v/IdeaProjects/bot/data.txt";
+        String path = "C:/Users/admin/IdeaProjects/bot/data.txt";
         File file = new File(path);
         Scanner scannerF = new Scanner(file);
         HashMap<String, String> linkNames = new HashMap<>();
@@ -37,33 +67,48 @@ public class Story implements Page {
         }
         return linkNames;
     }
-
-    public void printTitles() throws FileNotFoundException {
-        ArrayList<String> keys = new ArrayList<>(makeDictNames().keySet());
-        for (String key : keys) System.out.println(key);
-        System.out.println();
-        System.out.println("Выбрать историю: ");
+    public boolean Check(String arg1, String arg2){
+        return Objects.equals(arg1, arg2);
     }
 
-    public String getPage(String link) {
+    public String printTitles() throws FileNotFoundException {
+        ArrayList<String> keys = new ArrayList<>(makeDictNames().keySet());
+        String list = "";
+        for (String key : keys) list= list +  key + '\n';
+        return list;
+    }
+
+    public String getPage(String link)  {
         StringBuilder page = new StringBuilder();
+        BufferedReader in = null;
         try {
             URL url = new URL(link);
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+            in = new BufferedReader(new InputStreamReader(url.openStream(), "cp1251"));
             String inputLine;
-            while ((inputLine = in.readLine()) != null)
+            while ((inputLine = in.readLine()) != null) {
                 page.append(inputLine);
+            }
             in.close();
         }
         catch (IOException e){
             System.out.println("IOException");
+        }
+        finally {
+            try{
+                if (in!=null){
+                    in.close();
+                }
+            }
+            catch (IOException e){
+                System.out.println("IOException");
+            }
+
         }
         return page.toString();
     }
 
     public Map<String, ArrayList<String>> seasonsAndEpisodes() throws IOException {
         String page = getPage(makeLink());
-
         Pattern pattern = Pattern.compile ("<table>.+?</table>");
         Matcher matcher = pattern.matcher (page);
         Pattern pattern1 = Pattern.compile (">[а-яА-ЯёЁ|0-9].+?<");
@@ -94,18 +139,21 @@ public class Story implements Page {
         return map;
     }
 
-    public void printSeasons() throws IOException {
+    public String printSeasons() throws IOException {
+        //for (String key : keys) System.out.println(key);
         ArrayList<String> keys = new ArrayList<>(seasonsAndEpisodes().keySet());
-        for (String key : keys) System.out.println(key);
-        System.out.println();
-        System.out.println("Выбрать сезон: ");
+        String list = "";
+        for (String key : keys) list = list +  key + '\n';
+        return list;
+        //System.out.println();
+        //System.out.println("Выбрать сезон: ");
     }
 
-    public void printEpisodes() throws IOException {
-        ArrayList<String> values = seasonsAndEpisodes().get(season);
-        for (String value : values) System.out.println(value);
-        System.out.println();
-        System.out.println("Выбрать эпизод: ");
+    public String printEpisodes() throws IOException {
+        ArrayList<String> keys = seasonsAndEpisodes().get(season);;
+        String list = "";
+        for (String key : keys) list = list +  key + '\n';
+        return list;
 
     }
 
