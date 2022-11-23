@@ -1,4 +1,4 @@
-package org.example;
+package org.example.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -10,12 +10,16 @@ public class Episode extends Story implements Page {
     private String episode;
     private String seasonNumber;
     private String episodeNumber;
-    public Episode(String episode){
-        this.episode = episode;
-    }
-
-    public String getEpisode() {
-        return episode;
+    public boolean setEpisode(String episode){
+        try {
+            Integer.parseInt(episode);
+            this.episode = episode;
+            return true;
+        }
+        catch (NumberFormatException e){
+            System.out.println("Вы ввели не число");
+            return false;
+        }
     }
 
     public String makeLink() throws FileNotFoundException {
@@ -47,7 +51,8 @@ public class Episode extends Story implements Page {
         return link;
     }
 
-    public void extractActions() throws IOException {
+    public String extractActions() throws IOException {
+        String tempString = "";
         String page = getPage(makeLink());
         String firstTag = "<a name=\"Act_" + seasonNumber + "_" + episodeNumber;
         Pattern pattern = Pattern.compile(firstTag + ".+?<br/><br/><br/>");
@@ -58,23 +63,28 @@ public class Episode extends Story implements Page {
             matcher1 = pattern1.matcher(matcher.group());
             int i = 1;
             String string;
+            String[] nonType = {"<font class=\"TextItem\">",
+            "</font> <font class=\"TextUp\">",
+            "</font>",
+            "&#34;",
+            "<font class=\"TextLove\">",
+            "<font class=\"TextGold\">"};
             while (matcher1.find()) {
                 string = matcher1.group(i);
                 if (string.charAt(0) != '<') {
                     string = string.replaceAll("&#34;", "\"");
-                    System.out.println();
-                    System.out.println(string);
+                    tempString += '\n' + string;
                 }
                 else {
-                    string = string.replaceAll("<font class=\"TextItem\">", "");
-                    string = string.replaceAll("</font> <font class=\"TextUp\">", "  ---   ");
-                    string = string.replaceAll("</font>", "");
-                    string = string.replaceAll("&#34;", "\"");
-                    string = string.replaceAll("<font class=\"TextLove\">", "\"");
-                    string = string.replaceAll("<font class=\"TextGold\">", "\"");
-                    System.out.println(string);
+                    for (String s : nonType) {
+                        if (string.contains(s)){
+                            string = string.replaceAll(s, "");
+                        }
+                    }
+                    tempString += string;
                 }
             }
         }
+        return tempString;
     }
 }
