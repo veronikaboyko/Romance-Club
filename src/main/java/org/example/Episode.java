@@ -17,7 +17,6 @@ public class Episode extends Story implements Page {
             return true;
         }
         catch (NumberFormatException e){
-            System.out.println("Вы ввели не число");
             return false;
         }
     }
