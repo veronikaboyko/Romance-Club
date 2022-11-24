@@ -1,7 +1,6 @@
 package org.example.telegram;
 import org.example.model.Episode;
 import org.example.model.Story;
-import org.example.model.User;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -9,12 +8,12 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class TelegramBot extends TelegramLongPollingBot {
     int count = 1;
+    SendMessage sm;
+    Story story = new Story();
+    Episode episode = new Episode();
     String list;
     boolean flagEpisode = true;
     boolean[] flags = {false,false,false,false};
@@ -37,9 +36,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     }
     public void sendText(Long who, String what){
-        SendMessage sm;
-        Story story = new Story();
-        Episode episode = new Episode();
         try {
             if (what.equals("/start")) {
                 try {
@@ -51,33 +47,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                     execute(sm);
                 }
                 catch (IOException e) {
-                    System.out.println("IOException метод start");
+                    SendMessage test = new SendMessage();
+                    test.setChatId(who);
+                    test.setText("IOException метод start");
+                    execute(test);
                 }
             }
             else{
                 if(flags[0]) {
-                    while (true) {
-                        if (story.setName(what)) {
-                            break;
-                        }
-                    }
-                    story.seasonsAndEpisodes();
-                    String list = story.printSeasons();
-                    sm = SendMessage.builder()
-                            .chatId(who.toString())
-                            .text(list).build();
-                    flags[0] = false;
-                    flags[1] = true;
-                    execute(sm);
+                    Season(who,what);
                 }
                 else if(flags[1]) {
                     if (what.equals("/restart")){
-                        String list = story.printTitles();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
-                        execute(sm);
-                        flags = new boolean[]{true, false, false, false};
+                        Restart(who);
                     }
                     else if (what.equals("/back")) {
                         String list = story.printTitles();
@@ -89,28 +71,26 @@ public class TelegramBot extends TelegramLongPollingBot {
                         execute(sm);
                     }
                     else {
-                        while (true) {
                             if (story.setSeason(what)) {
-                                break;
+                                String list = story.printEpisodes();
+                                sm = SendMessage.builder()
+                                        .chatId(who.toString())
+                                        .text(list).build();
+                                flags[1] = false;
+                                flags[2] = true;
+                                execute(sm);
                             }
-                        }
-                        String list = story.printEpisodes();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
-                        flags[1] = false;
-                        flags[2] = true;
-                        execute(sm);
+                            else{
+                                SendMessage test = new SendMessage();
+                                test.setChatId(who);
+                                test.setText("Введите название из списка");
+                                execute(test);
+                            }
                     }
                 }
                 else if(flags[2]) {
                     if (what.equals("/restart")){
-                        String list = story.printTitles();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
-                        execute(sm);
-                        flags = new boolean[]{true, false, false, false};
+                        Restart(who);
                     }
                     else if (what.equals("/back")) {
                         String list = story.printSeasons();
@@ -120,8 +100,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                         flags[2] = false;
                         flags[1] = true;
                         execute(sm);
-                    } else {
-                        while (flagEpisode) {
+                    }
+                    else {
                             if (episode.setEpisode(what)) {
                                 flagEpisode = false;
                                 list = episode.extractActions();
@@ -130,37 +110,23 @@ public class TelegramBot extends TelegramLongPollingBot {
                                 test.setChatId(who);
                                 test.setText(splitList[count]);
                                 execute(test);
-                                break;
+                                flags[2] = false;
+                                flags[3] = true;
                             }
-                        }
+                            else{
+                                SendMessage test = new SendMessage();
+                                test.setChatId(who);
+                                test.setText("Вы ввели не число");
+                                execute(test);
+                            }
                     }
-                    flags[2] = false;
-                    flags[3] = true;
                 }
                 else if (flags[3]){
-                    String[] splitList = list.split("\n");
-                    if (what.equals("/next") && count < splitList.length - 1){
-                        SendMessage test = new SendMessage();
-                        test.setChatId(who);
-                        test.setText(splitList[count + 1]);
-                        count++;
-                        execute(test);
+                    if(what.equals("/restart")){
+                        Restart(who);
                     }
-                    else if(what.equals("/before") && count > 1){
-                        SendMessage test = new SendMessage();
-                        test.setChatId(who);
-                        test.setText(splitList[count - 1]);
-                        count--;
-                        execute(test);
-                    }
-                    else if(what.equals("/back")){
-                        String list = story.printEpisodes();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
-                        flags[2] = true;
-                        flagEpisode = true;
-                        execute(sm);
+                    else {
+                        Story(who, what);
                     }
                 }
             }
@@ -170,32 +136,63 @@ public class TelegramBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);
         }
     }
-    public void read(String what) throws IOException {
-
-        Story story = new Story();
-        while (true) {
-            if(story.setName(what)){
-                break;
+    public void Restart(Long who) throws FileNotFoundException, TelegramApiException {
+        String list = story.printTitles();
+        sm = SendMessage.builder()
+                .chatId(who.toString())
+                .text(list).build();
+        execute(sm);
+        flags = new boolean[]{true, false, false, false};
+    }
+    public void Season(Long who, String what) throws IOException, TelegramApiException {
+            if (story.setName(what)) {
+                story.seasonsAndEpisodes();
+                String list = story.printSeasons();
+                sm = SendMessage.builder()
+                        .chatId(who.toString())
+                        .text(list).build();
+                flags[0] = false;
+                flags[1] = true;
+                execute(sm);
             }
-        }
-        story.seasonsAndEpisodes();
-        story.printSeasons();
-        while(true) {
-            if(story.setSeason(what)){
-                break;
+            else {
+                SendMessage test = new SendMessage();
+                test.setChatId(who);
+                test.setText("Введите название из списка");
+                execute(test);
             }
+    }
+    public void Story(Long who, String what) throws TelegramApiException, IOException {
+        String[] splitList = list.split("\n");
+        if (what.equals("/next") && count < splitList.length - 1){
+            SendMessage test = new SendMessage();
+            test.setChatId(who);
+            test.setText(splitList[count + 1]);
+            count++;
+            execute(test);
         }
-        story.printEpisodes();
-
-        Episode episode = new Episode();
-
-        while(true) {
-            if(episode.setEpisode(what)){
-                break;
-            }
+        else if(what.equals("/before") && count > 1){
+            SendMessage test = new SendMessage();
+            test.setChatId(who);
+            test.setText(splitList[count - 1]);
+            count--;
+            execute(test);
         }
-        episode.extractActions();
-
+        else if(count >= splitList.length - 1 && what.equals("/next")){
+            SendMessage test = new SendMessage();
+            test.setChatId(who);
+            test.setText("Конец гайда:");
+            execute(test);
+        }
+        else if(what.equals("/back")){
+            String list = story.printEpisodes();
+            sm = SendMessage.builder()
+                    .chatId(who.toString())
+                    .text(list).build();
+            flags[2] = true;
+            flagEpisode = true;
+            execute(sm);
+        }
     }
 
 }
