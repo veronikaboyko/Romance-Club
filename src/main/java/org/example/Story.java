@@ -42,7 +42,6 @@ public class Story implements Page {
             return true;
         }
         else{
-            System.out.println("Введите название из списка");
             return false;
         }
     }
