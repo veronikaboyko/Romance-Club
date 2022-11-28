@@ -67,5 +67,4 @@ public class User {
         episode.extractActions();
 
     }
-
 }

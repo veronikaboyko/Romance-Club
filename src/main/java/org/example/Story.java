@@ -10,7 +10,7 @@ public class Story implements Page {
     protected static String name;
     protected static String season;
 
-   public boolean setName(String Name) throws FileNotFoundException {
+    public boolean setName(String Name) throws FileNotFoundException {
         HashMap<String, String>linkCheck = makeDictNames();
         boolean flag = false;
         for (String key : linkCheck.keySet()){
@@ -71,6 +71,10 @@ public class Story implements Page {
         return linkNames;
     }
 
+    public boolean Check(String arg1, String arg2){
+        return Objects.equals(arg1, arg2);
+    }
+
     /**
      * функция выводит на экран названия всех доступных историй
      * @throws FileNotFoundException
@@ -91,7 +95,7 @@ public class Story implements Page {
         StringBuilder page = new StringBuilder();
         try {
             URL url = new URL(link);
-            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "cp1251"));
+            BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
             String inputLine;
             while ((inputLine = in.readLine()) != null)
                 page.append(inputLine);
