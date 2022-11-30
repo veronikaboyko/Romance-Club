@@ -1,10 +1,10 @@
 # Romance-Club
-Гайд по прохождению мобильной игры "Клуб Романтики".
+Guide for the passage of the mobile game "Romance Club".
 
-"Клуб Романтики" - это сборник интерактивных историй с элементами ролевой игры. Вы просматриваете различные сцены, читаете реплики героев и выбираете, как должен реагировать ваш персонаж. Сюжет развивается в зависимости от принятых вами решений.
- 
-Бот выдает краткий пересказ событий выбранного эпизода, информацию о всех развилках в сюжете, варианты ответов и последствия принятых решений.
+"Romance Club" is a collection of interactive stories with elements of a role-playing game. You watch various scenes, read the characters' lines, and choose how your character should react. The plot develops depending on the decisions you make.
 
-Для начала работы ввести "/start", для помощи ввести "help".
+The bot gives a brief retelling of the events of the selected episode, information about all the forks in the plot, answer options and the consequences of the decisions made.
 
-Информация взята с сайта https://gamesisart.ru/guide/Romance_Club_Prohozhdenie.html#All
+Type "/start" to get started, type "help" for help.
+
+Information taken from the site https://gamesisart.ru/guide/Romance_Club_Prohozhdenie.html#All
