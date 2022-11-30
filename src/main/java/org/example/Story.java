@@ -9,40 +9,43 @@ import java.util.regex.Pattern;
 public class Story implements Page {
     protected static String name;
     protected static String season;
+    protected final String path = "/Users/v/IdeaProjects/bot/data.txt";
+    private boolean seasonFlag;
+    private boolean nameFlag;
 
-    public boolean setName(String Name) throws FileNotFoundException {
+    public boolean getSeasonFlag(){
+        return seasonFlag;
+    }
+    public boolean getNameFlag(){
+        return nameFlag;
+    }
+    public void setName(String name) throws FileNotFoundException {
         HashMap<String, String>linkCheck = makeDictNames();
-        boolean flag = false;
         for (String key : linkCheck.keySet()){
-            if (Check(key,Name)){
-                flag = true;
+            if (Check(key, name)){
+                nameFlag = true;
             }
         }
-        if(flag) {
-            name = Name;
-            return true;
+        if(nameFlag) {
+            Story.name = name;
         }
         else {
             System.out.println("Введите название из списка");
-            return false;
         }
     }
 
-    public boolean setSeason(String season) throws IOException {
+    public void setSeason(String season) throws IOException {
         Map<String, ArrayList<String>> linkCheck = seasonsAndEpisodes();
-        boolean flag = false;
         for (String key : linkCheck.keySet()){
             if (Check(key,season)){
-                flag = true;
+                seasonFlag = true;
             }
         }
-        if(flag) {
+        if (seasonFlag) {
             Story.season = season;
-            return true;
         }
-        else{
+        else {
             System.out.println("Введите название из списка");
-            return false;
         }
     }
 
@@ -52,7 +55,7 @@ public class Story implements Page {
      * @throws FileNotFoundException
      */
     public HashMap<String, String> makeDictNames() throws FileNotFoundException {
-        String path = "/Users/v/IdeaProjects/bot/data.txt";
+
         File file = new File(path);
         Scanner scannerF = new Scanner(file);
         HashMap<String, String> linkNames = new HashMap<>();
@@ -169,11 +172,12 @@ public class Story implements Page {
     }
 
     /**
-     *
      * @return ссылка на страницу с информацией
      * @throws FileNotFoundException
      */
     public String makeLink() throws FileNotFoundException {
-        return "https://gamesisart.ru/guide/" + makeDictNames().get(name) + ".html";
+        StringBuilder link = new StringBuilder("https://gamesisart.ru/guide/");
+        link.append(makeDictNames().get(name)).append(".html");
+        return link.toString();
     }
 }

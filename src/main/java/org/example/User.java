@@ -45,7 +45,8 @@ public class User {
         Story story = new Story();
         story.printTitles();
         while (true) {
-            if(story.setName(scanner.nextLine())){
+            story.setName(scanner.nextLine());
+            if(story.getNameFlag()){
                break;
             }
         }
@@ -53,14 +54,16 @@ public class User {
         story.seasonsAndEpisodes();
         story.printSeasons();
         while(true) {
-            if(story.setSeason(scanner.nextLine())){
+            story.setSeason(scanner.nextLine());
+            if(story.getSeasonFlag()){
                 break;
             }
         }
         story.printEpisodes();
         Episode episode = new Episode();
         while(true) {
-            if(episode.setEpisode(scanner.nextLine())){
+            episode.setEpisode(scanner.nextLine());
+            if(episode.getEpisode().matches("[-+]?\\d+")){
                 break;
             }
         }
