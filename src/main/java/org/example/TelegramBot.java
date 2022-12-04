@@ -19,8 +19,6 @@ import java.util.List;
 import static java.lang.Math.toIntExact;
 public class TelegramBot extends TelegramLongPollingBot {
     int count = 1;
-    String info = "Последнее обновление игры - 10 ноября 2022 года" +
-            "Когда следующее обновление? - 29-31 декабря 2022 года";
     private final String token;
     SendMessage sm;
     Story story = new Story();
@@ -66,6 +64,28 @@ public class TelegramBot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+            else if(update.getMessage().getText().equals("/info")){
+                SendMessage message = new SendMessage();// Create a message object object
+                message.setChatId(chat_id);
+                message.setText("Последнее обновление игры - 10 ноября 2022 года");
+                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                List<InlineKeyboardButton> rowInline = new ArrayList<>();
+                InlineKeyboardButton button = new InlineKeyboardButton();
+                button.setText("Когда следующее обновление?");
+                button.setCallbackData("Когда следующее обновление?");
+                rowInline.add(button);
+                // Set the keyboard to the markup
+                rowsInline.add(rowInline);
+                // Add it to the message
+                markupInline.setKeyboard(rowsInline);
+                message.setReplyMarkup(markupInline);
+                try {
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
             else {
                 sendText(chat_id, update.getMessage().getText());
             }
@@ -93,6 +113,17 @@ public class TelegramBot extends TelegramLongPollingBot {
                     e.printStackTrace();
                 }
             }
+            else  if (call_data.equals("Когда следующее обновление?")){
+                EditMessageText new_message = new EditMessageText();
+                new_message.setChatId(chat_id);
+                new_message.setMessageId(toIntExact(message_id));
+                new_message.setText("29-31 декабря 2022 года");
+                try {
+                    execute(new_message);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
     public TelegramBot(String token, String botName) {
@@ -100,13 +131,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
     public void sendText(Long who, String what){
         try {
-            if (what.equals("/info")) {
-                SendMessage test = new SendMessage();
-                test.setChatId(who);
-                test.setText(info);
-                execute(test);
-            }
-            else{
                 if(flags[0]) {
                     Season(who,what);
                 }
@@ -182,7 +206,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                         Story(who, what);
                     }
                 }
-            }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);      //Any error will be printed here
         } catch (IOException e) {
@@ -278,4 +301,5 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
 }
+
 
