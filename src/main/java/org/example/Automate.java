@@ -1,24 +1,56 @@
 package org.example.keyboard;
 
+/**
+ * состояния бота
+ * Restart - начальное
+ * Story - состоянии на шаге вывода историй
+ * Seasonss - состоянии на шаге вывода сезонов
+ * Episode - состоянии на шаге вывода епизодов
+ * Text - состояние при работе с конкретной историе
+ * метод nextState - для перехода между состояниями
+ */
 public enum Automate {
+    Restart{
+        @Override
+        public Automate nextState(String string) {
+            return Story;
+        }
+    },
     Story{
-        public boolean[] SetFlags(){
-            return new boolean[]{true,false,false,false};
+        @Override
+        public Automate nextState(String string) {
+            if(string.equals("/restart")){
+                return Restart;
+            }
+            return Seasonss;
         }
     },
     Seasonss{
-        public boolean[] SetFlags(){
-            return new boolean[]{false,true,false,false};
+        @Override
+        public Automate nextState(String string) {
+            if(string.equals("/restart")){
+                return Restart;
+            }
+            return Episode;
         }
-    },Episode{
-        public boolean[] SetFlags(){
-            return new boolean[]{false,false,true,false};
+    },
+    Episode{
+        @Override
+        public Automate nextState(String string) {
+            if(string.equals("/restart")){
+                return Restart;
+            }
+            return Text;
         }
-    },Text{
-        public boolean[] SetFlags(){
-            return new boolean[]{false,false,false,true};
+    },
+    Text{
+        @Override
+        public Automate nextState(String string) {
+            if(string.equals("/restart")){
+                return Restart;
+            }
+            return this;
         }
     };
-
-    public abstract boolean[] SetFlags();
-};
+    public abstract Automate nextState(String string);
+    }
