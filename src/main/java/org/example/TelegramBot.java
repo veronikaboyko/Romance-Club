@@ -1,5 +1,7 @@
 package org.example.telegram;
+
 import org.example.keyboard.Automate;
+import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -7,26 +9,31 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import static java.lang.Math.toIntExact;
+
 public class TelegramBot extends TelegramLongPollingBot {
+    /**
+     * переменная для итерации по истории
+     */
     int count = 1;
     private final String token;
     SendMessage sm;
     Story story = new Story();
     Episode episode = new Episode();
     String list;
-    String[] splitList;
-    boolean flagEpisode = true;
-    boolean[] flags = Automate.Story.SetFlags();
+    /**
+     * начальное состояние бота
+     */
+    Automate automate = Automate.Restart;
+
     @Override
     public String getBotUsername() {
         return "Tutorial bot";
@@ -34,9 +41,15 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return token ;
+        return token;
     }
 
+    /**
+     * метод работает с телеграмм ботом:
+     * проверяет есть ли новое сообщение в боте
+     * обрабатывает его и выводит Inline клаваиатуру при запуске
+     * Выводит информацию об обновлении гайда и уточнение о запуске бота
+     */
     @Override
     public void onUpdateReceived(Update update) {
         String answer;
@@ -45,6 +58,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (update.getMessage().getText().equals("/start")) {
                 SendMessage message = new SendMessage();// Create a message object object
                 message.setChatId(chat_id);
+                automate = Automate.Restart;
                 message.setText("Вы хотите начать?");
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
@@ -63,8 +77,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            }
-            else if(update.getMessage().getText().equals("/info")){
+            } else if (update.getMessage().getText().equals("/info")) {
                 SendMessage message = new SendMessage();// Create a message object object
                 message.setChatId(chat_id);
                 message.setText("Последнее обновление игры - 10 ноября 2022 года");
@@ -85,13 +98,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            }
-            else {
+            } else {
                 sendText(chat_id, update.getMessage().getText());
             }
-
-        }
-        else if (update.hasCallbackQuery()) {
+        } else if (update.hasCallbackQuery()) {
             // Set variables
             String call_data = update.getCallbackQuery().getData();
             long message_id = update.getCallbackQuery().getMessage().getMessageId();
@@ -112,8 +122,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 } catch (TelegramApiException e) {
                     e.printStackTrace();
                 }
-            }
-            else  if (call_data.equals("Когда следующее обновление?")){
+            } else if (call_data.equals("Когда следующее обновление?")) {
                 EditMessageText new_message = new EditMessageText();
                 new_message.setChatId(chat_id);
                 new_message.setMessageId(toIntExact(message_id));
@@ -126,180 +135,124 @@ public class TelegramBot extends TelegramLongPollingBot {
             }
         }
     }
+
+    /**
+     * телеграмм токен спрятный в properties
+     */
     public TelegramBot(String token, String botName) {
         this.token = token;
     }
-    public void sendText(Long who, String what){
+
+    /**
+     * логика бота
+     * Проверка состояния бота и в зависимости от состояния выводит необходимую информацию
+     */
+    public void sendText(Long who, String what) {
         try {
-                if(flags[0]) {
-                    Season(who,what);
-                }
-                else if(flags[1]) {
-                    if (what.equals("/restart")){
-                        Restart(who);
-                    }
-                    else if (what.equals("/back")) {
-                        String list = story.printTitles();
+            automate = automate.nextState(what);
+            System.out.println(automate);
+            if (automate == Automate.Restart) {
+                Handler handler = new Handler();
+                String list = handler.Restart();
+                sm = SendMessage.builder()
+                        .chatId(who.toString())
+                        .text(list).build();
+                execute(sm);
+            } else if (automate == Automate.Story) {
+                Handler handler = new Handler();
+                String list = handler.Season(what);
+                sm = SendMessage.builder()
+                        .chatId(who.toString())
+                        .text(list).build();
+                execute(sm);
+            } else if (automate == Automate.Seasonss) {
+                if (what.equals("/back")) {
+                    String list = story.printTitles();
+                    sm = SendMessage.builder()
+                            .chatId(who.toString())
+                            .text(list).build();
+                    automate = Automate.Restart;
+                    execute(sm);
+                } else {
+                    if (story.setSeason(what)) {
+                        String list = story.printEpisodes();
                         sm = SendMessage.builder()
                                 .chatId(who.toString())
                                 .text(list).build();
-                        flags = Automate.Story.SetFlags();
                         execute(sm);
-                    }
-                    else {
-                            if (story.setSeason(what)) {
-                                String list = story.printEpisodes();
-                                sm = SendMessage.builder()
-                                        .chatId(who.toString())
-                                        .text(list).build();
-                                flags = Automate.Episode.SetFlags();
-                                execute(sm);
-                            }
-                            else{
-                                SendMessage test = new SendMessage();
-                                test.setChatId(who);
-                                test.setText("Введите название из списка");
-                                execute(test);
-                            }
+                    } else {
+                        SendMessage test = new SendMessage();
+                        test.setChatId(who);
+                        test.setText("Введите название из списка");
+                        execute(test);
                     }
                 }
-                else if(flags[2]) {
-                    if (what.equals("/restart")){
-                        Restart(who);
+            } else if (automate == Automate.Episode) {
+                if (what.equals("/back")) {
+                    String list = story.printSeasons();
+                    sm = SendMessage.builder()
+                            .chatId(who.toString())
+                            .text(list).build();
+                    automate = Automate.Story;
+                    execute(sm);
+                } else {
+                    if (episode.setEpisode(what)) {
+                        list = episode.extractActions();
+                        String[] splitList = list.split("\n");
+                        SendMessage test = new SendMessage();
+                        test.setChatId(who);
+                        test.setText(splitList[count]);
+                        SendMessage sendMessage = new SendMessage();
+                        sendMessage.enableMarkdown(true);
+                        sendMessage.setChatId(who);
+                        sendMessage.setText(splitList[count]);
+                        MakeKeyBoard keyBoard = new MakeKeyBoard();
+                        SendMessage message2;
+                        message2 = keyBoard.setButtons(sendMessage);
+                        execute(message2);
+                    } else {
+                        SendMessage test = new SendMessage();
+                        test.setChatId(who);
+                        test.setText("Вы ввели не число");
+                        execute(test);
                     }
-                    else if (what.equals("/back")) {
-                        String list = story.printSeasons();
+                }
+            } else if (automate == Automate.Text) {
+                Handler handler = new Handler();
+                switch (what) {
+                    case "/next" -> {
+                        SendMessage test = handler.Story(who, what, list, count);
+                        SendMessage test2 = new SendMessage();
+                        test2.setChatId(who);
+                        test2.setText("Конец гайда:");
+                        if (!test.equals(test2)) {
+                            count++;
+                        }
+                        execute(test);
+                    }
+                    case "/before" -> {
+                        SendMessage test = handler.Story(who, what, list, count);
+                        if (count > 1) {
+                            count--;
+                        }
+                        execute(test);
+                    }
+                    case "/back" -> {
+                        String list = story.printEpisodes();
                         sm = SendMessage.builder()
                                 .chatId(who.toString())
                                 .text(list).build();
-                        flags = Automate.Seasonss.SetFlags();
+                        automate = Automate.Seasonss;
                         execute(sm);
                     }
-                    else {
-                        if (episode.setEpisode(what)) {
-                            flagEpisode = false;
-                            list = episode.extractActions();
-                            String[] splitList = list.split("\n");
-                            SendMessage test = new SendMessage();
-                            test.setChatId(who);
-                            test.setText(splitList[count]);
-                            SendMessage sendMessage = new SendMessage();
-                            sendMessage.enableMarkdown(true);
-                            sendMessage.setChatId(who);
-                            sendMessage.setText(splitList[count]);
-                            setButtons(sendMessage);
-                            flags = Automate.Text.SetFlags();
-                        }
-                        else{
-                            SendMessage test = new SendMessage();
-                            test.setChatId(who);
-                            test.setText("Вы ввели не число");
-                            execute(test);
-                        }
-                    }
                 }
-                else if (flags[3]){
-                    if(what.equals("/restart")){
-                        Restart(who);
-                    }
-                    else {
-                        Story(who, what);
-                    }
-                }
+            }
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);      //Any error will be printed here
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    public synchronized void setButtons(SendMessage sendMessage) throws TelegramApiException {
-        // Создаем клавиуатуру
-        ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
-        sendMessage.setReplyMarkup(replyKeyboardMarkup);
-        replyKeyboardMarkup.setSelective(true);
-        replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboard(false);
-
-        // Создаем список строк клавиатуры
-        List<KeyboardRow> keyboard = new ArrayList<>();
-
-        // Первая строчка клавиатуры
-        KeyboardRow keyboardFirstRow = new KeyboardRow();
-        // Добавляем кнопки в первую строчку клавиатуры
-        keyboardFirstRow.add(new KeyboardButton("/next"));
-
-        // Вторая строчка клавиатуры
-        KeyboardRow keyboardSecondRow = new KeyboardRow();
-        // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardSecondRow.add(new KeyboardButton("/before"));
-
-        // Добавляем все строчки клавиатуры в список
-        keyboard.add(keyboardFirstRow);
-        keyboard.add(keyboardSecondRow);
-        // и устанваливаем этот список нашей клавиатуре
-        replyKeyboardMarkup.setKeyboard(keyboard);
-        execute(sendMessage);
-    }
-    public void Restart(Long who) throws FileNotFoundException, TelegramApiException {
-        String list = story.printTitles();
-        sm = SendMessage.builder()
-                .chatId(who.toString())
-                .text(list).build();
-        execute(sm);
-        flags = Automate.Story.SetFlags();
-    }
-    public void Season(Long who, String what) throws IOException, TelegramApiException {
-            if (story.setName(what)) {
-                story.seasonsAndEpisodes();
-                String list = story.printSeasons();
-                sm = SendMessage.builder()
-                        .chatId(who.toString())
-                        .text(list).build();
-                flags = Automate.Seasonss.SetFlags();
-                execute(sm);
-            }
-            else {
-                SendMessage test = new SendMessage();
-                test.setChatId(who);
-                test.setText("Введите название из списка");
-                execute(test);
-            }
-    }
-    public void Story(Long who, String what) throws TelegramApiException, IOException {
-        splitList = list.split("\n");
-        SendMessage test = new SendMessage();
-        if (what.equals("/next") && count < splitList.length - 1){
-            test.setChatId(who);
-            test.setText(splitList[count + 1]);
-            count++;
-            execute(test);
-        }
-        else if(what.equals("/before") && count > 1){
-            test.setChatId(who);
-            test.setText(splitList[count - 1]);
-            count--;
-            execute(test);
-        }
-        else if(count == 1){
-            test.setChatId(who);
-            test.setText("Начало гайда:");
-            execute(test);
-        }
-        else if(count >= splitList.length - 1 && what.equals("/next")){
-            test.setChatId(who);
-            test.setText("Конец гайда:");
-            execute(test);
-        }
-        else if(what.equals("/back")) {
-            String list = story.printEpisodes();
-            sm = SendMessage.builder()
-                    .chatId(who.toString())
-                    .text(list).build();
-            flags[2] = true;
-            execute(sm);
-        }
-    }
-
 }
 
 
