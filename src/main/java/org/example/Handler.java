@@ -21,7 +21,8 @@ public class Handler {
      */
     public String Season(String what) throws IOException, TelegramApiException {
         Story story = new Story();
-        if (story.setName(what)) {
+        story.setName(what);
+        if (story.getNameFlag()) {
             story.seasonsAndEpisodes();
             return story.printSeasons();
         }
