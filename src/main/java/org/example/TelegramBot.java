@@ -150,7 +150,6 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void sendText(Long who, String what) {
         try {
             automate = automate.nextState(what);
-            System.out.println(automate);
             if (automate == Automate.Restart) {
                 Handler handler = new Handler();
                 String list = handler.Restart();
@@ -174,7 +173,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     automate = Automate.Restart;
                     execute(sm);
                 } else {
-                    if (story.setSeason(what)) {
+                    story.setSeason(what);
+                    if (story.getSeasonFlag()) {
                         String list = story.printEpisodes();
                         sm = SendMessage.builder()
                                 .chatId(who.toString())
@@ -183,6 +183,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         SendMessage test = new SendMessage();
                         test.setChatId(who);
+                        automate = Automate.Story;
                         test.setText("Введите название из списка");
                         execute(test);
                     }
@@ -196,7 +197,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     automate = Automate.Story;
                     execute(sm);
                 } else {
-                    if (episode.setEpisode(what)) {
+                    episode.setEpisode(what);
+                    if (episode.getEpisodeFlag()!= null && episode.getEpisodeFlag().matches("[-+]?\\d+")) {
                         list = episode.extractActions();
                         String[] splitList = list.split("\n");
                         SendMessage test = new SendMessage();
@@ -213,6 +215,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         SendMessage test = new SendMessage();
                         test.setChatId(who);
+                        automate = Automate.Seasonss;
                         test.setText("Вы ввели не число");
                         execute(test);
                     }
@@ -254,5 +257,3 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 }
-
-
