@@ -1,7 +1,4 @@
 package org.example.model;
-
-
-
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -9,43 +6,48 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Story implements Page {
+    private boolean seasonFlag;
+    private boolean nameFlag;
+
+    public boolean getSeasonFlag(){
+        return seasonFlag;
+    }
+    public boolean getNameFlag(){
+        return nameFlag;
+    }
     protected static String name;
     protected static String season;
 
-    public boolean setName(String Name) throws FileNotFoundException {
+    public void setName(String name) throws FileNotFoundException {
         HashMap<String, String>linkCheck = makeDictNames();
-        boolean flag = false;
         for (String key : linkCheck.keySet()){
-            if (Check(key,Name)){
-                flag = true;
+            if (Check(key, name)){
+                nameFlag = true;
             }
         }
-        if(flag) {
-            name = Name;
-            return true;
+        if(nameFlag) {
+            Story.name = name;
         }
         else {
-            return false;
         }
     }
 
-    public boolean setSeason(String season) throws IOException {
+    public void setSeason(String season) throws IOException {
         Map<String, ArrayList<String>> linkCheck = seasonsAndEpisodes();
-        boolean flag = false;
         for (String key : linkCheck.keySet()){
             if (Check(key,season)){
-                flag = true;
+                seasonFlag = true;
             }
         }
-        if(flag) {
+        if (seasonFlag) {
             Story.season = season;
-            return true;
-        }
-        else{
-            return false;
         }
     }
-
+    /**
+     *
+     * @return linkNames названия, соответствующие выбранной истории, будут использованы для создания ссылки
+     * @throws FileNotFoundException
+     */
     public HashMap<String, String> makeDictNames() throws FileNotFoundException {
         String path = "C:/Users/admin/IdeaProjects/bot/data.txt";
         File file = new File(path);
@@ -69,13 +71,21 @@ public class Story implements Page {
         return Objects.equals(arg1, arg2);
     }
 
+    /**
+     * функция выводит на экран названия всех доступных историй
+     * @throws FileNotFoundException
+     */
     public String printTitles() throws FileNotFoundException {
         ArrayList<String> keys = new ArrayList<>(makeDictNames().keySet());
-        String list = "";
-        for (String key : keys) list= list +  key + '\n';
-        return list;
+        StringBuilder list = new StringBuilder();
+        for (String key : keys) list.append(key).append('\n');
+        return list.toString();
     }
-
+    /**
+     *
+     * @param link страница
+     * @return содержание страницы
+     */
     public String getPage(String link)  {
         StringBuilder page = new StringBuilder();
         BufferedReader in = null;
@@ -104,7 +114,11 @@ public class Story implements Page {
         }
         return page.toString();
     }
-
+    /**
+     * функция считывает информацию о количестве сезонов и количестве эпизодов в каждом сезоне
+     * @return map ключ - сезон, значение - массив эпизодов этого сезона
+     * @throws IOException
+     */
     public Map<String, ArrayList<String>> seasonsAndEpisodes() throws IOException {
         String page = getPage(makeLink());
         Pattern pattern = Pattern.compile ("<table>.+?</table>");
@@ -136,26 +150,34 @@ public class Story implements Page {
         }
         return map;
     }
-
+    /**
+     * функция выводит на экран количество доступных сезонов
+     * @throws IOException
+     */
     public String printSeasons() throws IOException {
-        //for (String key : keys) System.out.println(key);
         ArrayList<String> keys = new ArrayList<>(seasonsAndEpisodes().keySet());
-        String list = "";
-        for (String key : keys) list = list +  key + '\n';
-        return list;
-        //System.out.println();
-        //System.out.println("Выбрать сезон: ");
+        StringBuilder list = new StringBuilder();
+        for (String key : keys) list.append(key).append('\n');
+        return list.toString();
     }
-
+    /**
+     * функция выводит на экран количество и названия всех доступных эпизодов
+     * @throws IOException
+     */
     public String printEpisodes() throws IOException {
-        ArrayList<String> keys = seasonsAndEpisodes().get(season);;
-        String list = "";
-        for (String key : keys) list = list +  key + '\n';
-        return list;
+        ArrayList<String> keys = seasonsAndEpisodes().get(season);
+        StringBuilder list = new StringBuilder();
+        for (String key : keys) list.append(key).append('\n');
+        return list.toString();
 
     }
-
+    /**
+     * @return ссылка на страницу с информацией
+     * @throws FileNotFoundException
+     */
     public String makeLink() throws FileNotFoundException {
-        return "https://gamesisart.ru/guide/" + makeDictNames().get(name) + ".html";
+        StringBuilder link = new StringBuilder("https://gamesisart.ru/guide/");
+        link.append(makeDictNames().get(name)).append(".html");
+        return link.toString();
     }
 }
