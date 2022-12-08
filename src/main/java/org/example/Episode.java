@@ -10,80 +10,100 @@ public class Episode extends Story implements Page {
     private String episode;
     private String seasonNumber;
     private String episodeNumber;
-    public boolean setEpisode(String episode){
+    public void setEpisode(String episode){
         try {
             Integer.parseInt(episode);
             this.episode = episode;
-            return true;
         }
         catch (NumberFormatException e){
-            return false;
+            this.episode = episode;
         }
+    }
+    public String getEpisodeFlag(){
+        return episode;
     }
 
     public String makeLink() throws FileNotFoundException {
-        String link;
+        StringBuilder link = new StringBuilder();
         seasonNumber = (season.substring(season.length() - 1));
-        if (seasonNumber.equals("1")){
+        if (Integer.parseInt (seasonNumber) == 1){
+            //if (seasonNumber.equals("1")){
             if (Character.isDigit(episode.charAt(0))) {
                 episodeNumber = String.valueOf(episode.charAt(0));
-                link = "https://gamesisart.ru/guide/" + makeDictNames().get(name)
-                        + ".html#Act_" + seasonNumber + "_" + episodeNumber;
+                link.append("https://gamesisart.ru/guide/")
+                        .append(makeDictNames().get(name))
+                        .append(".html#Act_")
+                        .append(seasonNumber)
+                        .append("_")
+                        .append(episodeNumber);
             }
             else {
-                link = "https://gamesisart.ru/guide/" + makeDictNames().get(name)
-                        + ".html#Bonus";
+                link.append("https://gamesisart.ru/guide/")
+                        .append(makeDictNames().get(name))
+                        .append(".html#Bonus");
             }
         }
         else{
             if (Character.isDigit(episode.charAt(0))) {
                 episodeNumber = String.valueOf(episode.charAt(0));
-                link = "https://gamesisart.ru/guide/" + makeDictNames().get(name) + "_"
-                        + seasonNumber + ".html#Act_" + seasonNumber + "_" + episodeNumber;
+                link.append("https://gamesisart.ru/guide/")
+                        .append(makeDictNames().get(name))
+                        .append("_")
+                        .append(seasonNumber)
+                        .append(".html#Act_")
+                        .append("_")
+                        .append(episodeNumber);
             }
             else {
-                link = "https://gamesisart.ru/guide/" + makeDictNames().get(name) + "_"
-                        + seasonNumber + ".html#Bonus";
+                link.append("https://gamesisart.ru/guide/")
+                        .append(makeDictNames().get(name))
+                        .append("_")
+                        .append(seasonNumber)
+                        .append(".html#Bonus");
             }
         }
 
-        return link;
+        return link.toString();
     }
-
+    /**
+     * функция считывает информацию со страницы и выводит ее в консоль
+     * @throws IOException
+     */
     public String extractActions() throws IOException {
-        String tempString = "";
+        StringBuilder tmpString = new StringBuilder();
         String page = getPage(makeLink());
-        String firstTag = "<a name=\"Act_" + seasonNumber + "_" + episodeNumber;
-        Pattern pattern = Pattern.compile(firstTag + ".+?<br/><br/><br/>");
+        StringBuilder firstTag = new StringBuilder();
+        firstTag.append("<a name=\"Act_").append(seasonNumber).append("_").append(episodeNumber);
+        Pattern pattern = Pattern.compile(firstTag.append(".+?<br/><br/><br/>").toString());
         Matcher matcher = pattern.matcher(page);
         Pattern pattern1 = Pattern.compile("<p>(.+?)</p>");
         Matcher matcher1;
         if (matcher.find()) {
             matcher1 = pattern1.matcher(matcher.group());
             int i = 1;
-            String string;
-            String[] nonType = {"<font class=\"TextItem\">",
-            "</font> <font class=\"TextUp\">",
-            "</font>",
-            "&#34;",
-            "<font class=\"TextLove\">",
-            "<font class=\"TextGold\">"};
+            String text;
+            String[] tags = {"<font class=\"TextItem\">",
+                    "</font> <font class=\"TextUp\">",
+                    "</font>",
+                    "&#34;",
+                    "<font class=\"TextLove\">",
+                    "<font class=\"TextGold\">"};
             while (matcher1.find()) {
-                string = matcher1.group(i);
-                if (string.charAt(0) != '<') {
-                    string = string.replaceAll("&#34;", "\"");
-                    tempString += '\n' + string;
+                text = matcher1.group(i);
+                if (text.charAt(0) != '<') {
+                    text = text.replaceAll("&#34;", "\"");
+                    tmpString.append('\n').append(text);
                 }
                 else {
-                    for (String s : nonType) {
-                        if (string.contains(s)){
-                            string = string.replaceAll(s, "");
+                    for (String s : tags) {
+                        if (text.contains(s)){
+                            text = text.replaceAll(s, "");
                         }
                     }
-                    tempString += string;
+                    tmpString.append(text);
                 }
             }
         }
-        return tempString;
+        return tmpString.toString();
     }
 }
