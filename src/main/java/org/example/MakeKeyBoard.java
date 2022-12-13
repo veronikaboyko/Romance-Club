@@ -28,12 +28,12 @@ public class MakeKeyBoard {
         // Первая строчка клавиатуры
         KeyboardRow keyboardFirstRow = new KeyboardRow();
         // Добавляем кнопки в первую строчку клавиатуры
-        keyboardFirstRow.add(new KeyboardButton("/next"));
+        keyboardFirstRow.add(new KeyboardButton("next"));
 
         // Вторая строчка клавиатуры
         KeyboardRow keyboardSecondRow = new KeyboardRow();
         // Добавляем кнопки во вторую строчку клавиатуры
-        keyboardSecondRow.add(new KeyboardButton("/before"));
+        keyboardSecondRow.add(new KeyboardButton("before"));
 
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
