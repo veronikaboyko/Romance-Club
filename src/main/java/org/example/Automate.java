@@ -16,6 +16,12 @@ public enum Automate {
             return Story;
         }
     },
+    Start{
+        @Override
+        public Automate nextState(String string) {
+            return Story;
+        }
+    },
     Story{
         @Override
         public Automate nextState(String string) {
