@@ -10,24 +10,38 @@ public class Handler {
     /**
      * Метод Restart возвращает в начало работы гайда
      */
-    public String Restart() throws FileNotFoundException{
+    public SendMessage Restart(Long who, String what) throws FileNotFoundException{
         Story story = new Story();
-        return story.printTitles();
+        SendMessage sm;
+        String list = story.printTitles();
+        sm = SendMessage.builder()
+                .chatId(who.toString())
+                .text(list).build();
+        return sm;
     }
 
     /**
      * Метод Season работает с классом Season
      * @param what - то что ввел пользователь
      */
-    public String Season(String what) throws IOException, TelegramApiException {
+    public SendMessage Season(Long who, String what) throws IOException, TelegramApiException {
         Story story = new Story();
         story.setName(what);
         if (story.getNameFlag()) {
             story.seasonsAndEpisodes();
-            return story.printSeasons();
+            String list = story.printSeasons();
+            SendMessage sm;
+            sm = SendMessage.builder()
+                    .chatId(who.toString())
+                    .text(list).build();
+            return sm;
         }
         else {
-            return "Введите название из списка";
+            SendMessage sm;
+            sm = SendMessage.builder()
+                    .chatId(who.toString())
+                    .text( "Введите название из списка").build();
+            return sm;
         }
     }
 
@@ -43,11 +57,11 @@ public class Handler {
         System.out.println(count);
         String[] splitList = list.split("\n");
         SendMessage test = new SendMessage();
-        if (what.equals("/next") && count < splitList.length - 1) {
+        if (what.equals("next") && count < splitList.length - 1) {
             test.setChatId(who);
             test.setText(splitList[count + 1]);
             return test;
-        } else if (what.equals("/before") && count > 1) {
+        } else if (what.equals("before") && count > 1) {
             test.setChatId(who);
             test.setText(splitList[count - 1]);
             return test;
