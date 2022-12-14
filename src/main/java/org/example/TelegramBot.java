@@ -162,8 +162,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                     execute(handler.Restart(who, what));
                     break;
                 case Story:
-                    handler = new Handler();
-                    execute(handler.Season(who , what));
+                    SendMessage smg = handler.Season(who , what);
+                    execute(smg);
+                    if(smg.getText().equals("Введите название из списка")){
+                        automate = Automate.Start;
+                    }
                     break;
                 case Seasonss:
                     if (what.equals("/back")) {
