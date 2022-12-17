@@ -1,6 +1,6 @@
 package org.example.telegram;
-
 import org.example.model.Story;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -30,17 +30,15 @@ public class Handler {
         if (story.getNameFlag()) {
             story.seasonsAndEpisodes();
             String list = story.printSeasons();
-            SendMessage sm;
-            sm = SendMessage.builder()
-                    .chatId(who.toString())
-                    .text(list).build();
+            SendMessage sm = new SendMessage();
+            sm.setChatId(who);
+            sm.setText(list);
             return sm;
         }
         else {
-            SendMessage sm;
-            sm = SendMessage.builder()
-                    .chatId(who.toString())
-                    .text( "Введите название из списка").build();
+            SendMessage sm = new SendMessage();
+            sm.setChatId(who);
+            sm.setText("Введите название из списка");
             return sm;
         }
     }
@@ -56,22 +54,20 @@ public class Handler {
     public SendMessage Story (Long who, String what , String list, int count){
         System.out.println(count);
         String[] splitList = list.split("\n");
+        System.out.println(splitList.length);
         SendMessage test = new SendMessage();
+        test.setChatId(who);
         if (what.equals("next") && count < splitList.length - 1) {
-            test.setChatId(who);
-            test.setText(splitList[count + 1]);
+            test.setText((splitList[count + 1 ]));
             return test;
         } else if (what.equals("before") && count > 1) {
-            test.setChatId(who);
-            test.setText(splitList[count - 1]);
+            test.setText((splitList[count - 1]));
             return test;
         }else if (count == 1) {
-            test.setChatId(who);
-            test.setText("Начало гайда:");
+            test.setText(("Начало гайда:"));
             return test;
-        } else if (count >= splitList.length - 1 && what.equals("/next")) {
-            test.setChatId(who);
-            test.setText("Конец гайда:");
+        } else if (count >= splitList.length - 1 && what.equals("next")) {
+            test.setText(("Конец гайда:"));
             return test;
         }
         return test;
