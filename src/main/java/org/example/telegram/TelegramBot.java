@@ -1,8 +1,10 @@
+
 package org.example.telegram;
 
 import org.example.keyboard.Automate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
+import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
@@ -28,13 +30,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String token;
     SendMessage sm = new SendMessage();
     Story story = new Story();
+    Season season = new Season();
     Episode episode = new Episode();
     String list;
     /**
      * начальное состояние бота
      */
     Automate automate = Automate.Start;
-    GetFont font = new GetFont();
     Handler handler = new Handler();
 
     @Override
@@ -180,9 +182,9 @@ public class TelegramBot extends TelegramLongPollingBot {
                         automate = Automate.Start;
                         execute(sm);
                     } else {
-                        story.setSeason(what);
-                        if (story.getSeasonFlag()) {
-                            String list = story.printEpisodes();
+                        season.setSeason(what);
+                        if (season.getSeasonFlag()) {
+                            String list = episode.printEpisodes();
                             sm.setChatId(who);
                             sm.setText((list));
                             execute(sm);
@@ -197,15 +199,15 @@ public class TelegramBot extends TelegramLongPollingBot {
                     break;
                 case Episode:
                     if (what.equals("/back")) {
-                        String list = story.printSeasons();
+                        String list = season.printSeasons();
                         sm.setChatId(who);
                         sm.setText((list));
                         automate = Automate.Story;
                         execute(sm);
                     } else {
                         episode.setEpisode(what);
-                        if (episode.getEpisodeFlag()!= null && episode.getEpisodeFlag().matches("[-+]?\\d+")) {
-                            list = episode.extractActions();
+                        if (episode.getEpisode()!= null && episode.getEpisode().matches("[-+]?\\d+")) {
+                            list = episode.extractActions(episode);
                             String[] splitList = list.split("\n");
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
@@ -248,7 +250,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             execute(test);
                         }
                         case "/back" -> {
-                            String list = story.printEpisodes();
+                            String list = episode.printEpisodes();
                             sm.setChatId(who);
                             sm.setText((list));
                             automate = Automate.Seasonss;
