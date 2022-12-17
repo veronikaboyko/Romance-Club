@@ -5,6 +5,7 @@ import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -25,7 +26,7 @@ public class TelegramBot extends TelegramLongPollingBot {
      */
     private int count = 1;
     private final String token;
-    SendMessage sm;
+    SendMessage sm = new SendMessage();
     Story story = new Story();
     Episode episode = new Episode();
     String list;
@@ -33,6 +34,8 @@ public class TelegramBot extends TelegramLongPollingBot {
      * начальное состояние бота
      */
     Automate automate = Automate.Start;
+    GetFont font = new GetFont();
+    Handler handler = new Handler();
 
     @Override
     public String getBotUsername() {
@@ -56,10 +59,10 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             long chatId = update.getMessage().getChatId();
             if (update.getMessage().getText().equals("/start")) {
+                automate = Automate.Start;
                 SendMessage message = new SendMessage();// Create a message object object
                 message.setChatId(chatId);
-                automate = Automate.Start;
-                message.setText("Вы хотите начать?");
+                message.setText(("Вы хотите начать?"));
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
@@ -80,7 +83,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             } else if (update.getMessage().getText().equals("/info")) {
                 SendMessage message = new SendMessage();// Create a message object object
                 message.setChatId(chatId);
-                message.setText("Последнее обновление игры - 10 ноября 2022 года");
+                message.setText(("Последнее обновление игры - 10 ноября 2022 года"));
                 InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
                 List<InlineKeyboardButton> rowInline = new ArrayList<>();
@@ -116,7 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     EditMessageText newMessage = new EditMessageText();
                     newMessage.setChatId(chatId);
                     newMessage.setMessageId(toIntExact(messageId));
-                    newMessage.setText(answer);
+                    newMessage.setText((answer));
                     System.out.println(callData);
                     try {
                         execute(newMessage);
@@ -129,7 +132,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     newMessage = new EditMessageText();
                     newMessage.setChatId(chatId);
                     newMessage.setMessageId(toIntExact(messageId));
-                    newMessage.setText("29-31 декабря 2022 года");
+                    newMessage.setText(("29-31 декабря 2022 года"));
                     try {
                         execute(newMessage);
                     } catch (TelegramApiException e) {
@@ -155,10 +158,11 @@ public class TelegramBot extends TelegramLongPollingBot {
      */
     public void sendText(Long who, String what) {
         try {
+            System.out.println(automate);
             automate = automate.nextState(what);
+            System.out.println(automate);
             switch (automate){
                 case Restart:
-                    Handler handler = new Handler();
                     execute(handler.Restart(who, what));
                     break;
                 case Story:
@@ -171,24 +175,22 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case Seasonss:
                     if (what.equals("/back")) {
                         String list = story.printTitles();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
+                        sm.setChatId(who);
+                        sm.setText((list));
                         automate = Automate.Start;
                         execute(sm);
                     } else {
                         story.setSeason(what);
                         if (story.getSeasonFlag()) {
                             String list = story.printEpisodes();
-                            sm = SendMessage.builder()
-                                    .chatId(who.toString())
-                                    .text(list).build();
+                            sm.setChatId(who);
+                            sm.setText((list));
                             execute(sm);
                         } else {
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
                             automate = Automate.Story;
-                            test.setText("Введите название из списка");
+                            test.setText(("Введите название из списка"));
                             execute(test);
                         }
                     }
@@ -196,9 +198,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case Episode:
                     if (what.equals("/back")) {
                         String list = story.printSeasons();
-                        sm = SendMessage.builder()
-                                .chatId(who.toString())
-                                .text(list).build();
+                        sm.setChatId(who);
+                        sm.setText((list));
                         automate = Automate.Story;
                         execute(sm);
                     } else {
@@ -212,7 +213,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             SendMessage sendMessage = new SendMessage();
                             sendMessage.enableMarkdown(true);
                             sendMessage.setChatId(who);
-                            sendMessage.setText(splitList[count]);
+                            sendMessage.setText((splitList[count]));
                             MakeKeyBoard keyBoard = new MakeKeyBoard();
                             SendMessage message2;
                             message2 = keyBoard.setButtons(sendMessage);
@@ -221,19 +222,19 @@ public class TelegramBot extends TelegramLongPollingBot {
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
                             automate = Automate.Seasonss;
-                            test.setText("Вы ввели не число");
+                            test.setText(("Вы ввели не число"));
                             execute(test);
                         }
                     }
                     break;
                 case Text:
-                    handler = new Handler();
                     switch (what) {
                         case "next" -> {
                             SendMessage test = handler.Story(who, what, list, count);
+                            System.out.println(test);
                             SendMessage test2 = new SendMessage();
                             test2.setChatId(who);
-                            test2.setText("Конец гайда:");
+                            test2.setText(("Конец гайда:"));
                             if (!test.equals(test2)) {
                                 count++;
                             }
@@ -248,9 +249,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                         }
                         case "/back" -> {
                             String list = story.printEpisodes();
-                            sm = SendMessage.builder()
-                                    .chatId(who.toString())
-                                    .text(list).build();
+                            sm.setChatId(who);
+                            sm.setText((list));
                             automate = Automate.Seasonss;
                             execute(sm);
                         }
