@@ -1,13 +1,12 @@
 
 package org.example.telegram;
 
-import org.example.keyboard.Automate;
+import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
 import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -36,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * начальное состояние бота
      */
-    Automate automate = Automate.Start;
+    FinalStateAutomate automate = FinalStateAutomate.Start;
     Handler handler = new Handler();
 
     @Override
@@ -61,7 +60,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasMessage() && update.getMessage().hasText()) {
             long chatId = update.getMessage().getChatId();
             if (update.getMessage().getText().equals("/start")) {
-                automate = Automate.Start;
+                automate = FinalStateAutomate.Start;
                 SendMessage message = new SendMessage();// Create a message object object
                 message.setChatId(chatId);
                 message.setText(("Вы хотите начать?"));
@@ -122,7 +121,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     newMessage.setChatId(chatId);
                     newMessage.setMessageId(toIntExact(messageId));
                     newMessage.setText((answer));
-                    System.out.println(callData);
                     try {
                         execute(newMessage);
                     } catch (TelegramApiException e) {
@@ -130,7 +128,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     }
                     break;
                 case "Когда следующее обновление?":
-                    System.out.println(callData);
                     newMessage = new EditMessageText();
                     newMessage.setChatId(chatId);
                     newMessage.setMessageId(toIntExact(messageId));
@@ -160,9 +157,7 @@ public class TelegramBot extends TelegramLongPollingBot {
      */
     public void sendText(Long who, String what) {
         try {
-            System.out.println(automate);
             automate = automate.nextState(what);
-            System.out.println(automate);
             switch (automate){
                 case Restart:
                     execute(handler.Restart(who, what));
@@ -171,7 +166,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     SendMessage smg = handler.Season(who , what);
                     execute(smg);
                     if(smg.getText().equals("Введите название из списка")){
-                        automate = Automate.Start;
+                        automate = FinalStateAutomate.Start;
                     }
                     break;
                 case Seasonss:
@@ -179,7 +174,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         String list = story.printTitles();
                         sm.setChatId(who);
                         sm.setText((list));
-                        automate = Automate.Start;
+                        automate = FinalStateAutomate.Start;
                         execute(sm);
                     } else {
                         season.setSeason(what);
@@ -191,7 +186,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         } else {
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
-                            automate = Automate.Story;
+                            automate = FinalStateAutomate.Story;
                             test.setText(("Введите название из списка"));
                             execute(test);
                         }
@@ -202,7 +197,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         String list = season.printSeasons();
                         sm.setChatId(who);
                         sm.setText((list));
-                        automate = Automate.Story;
+                        automate = FinalStateAutomate.Story;
                         execute(sm);
                     } else {
                         episode.setEpisode(what);
@@ -223,7 +218,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         } else {
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
-                            automate = Automate.Seasonss;
+                            automate = FinalStateAutomate.Seasonss;
                             test.setText(("Вы ввели не число"));
                             execute(test);
                         }
@@ -233,7 +228,6 @@ public class TelegramBot extends TelegramLongPollingBot {
                     switch (what) {
                         case "next" -> {
                             SendMessage test = handler.Story(who, what, list, count);
-                            System.out.println(test);
                             SendMessage test2 = new SendMessage();
                             test2.setChatId(who);
                             test2.setText(("Конец гайда:"));
@@ -253,7 +247,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             String list = episode.printEpisodes();
                             sm.setChatId(who);
                             sm.setText((list));
-                            automate = Automate.Seasonss;
+                            automate = FinalStateAutomate.Seasonss;
                             execute(sm);
                         }
                     }
