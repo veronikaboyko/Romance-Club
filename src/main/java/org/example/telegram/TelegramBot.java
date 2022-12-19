@@ -1,4 +1,3 @@
-
 package org.example.telegram;
 
 import org.example.keyboard.FinalStateAutomate;
@@ -36,7 +35,8 @@ public class TelegramBot extends TelegramLongPollingBot {
      * начальное состояние бота
      */
     FinalStateAutomate automate = FinalStateAutomate.Start;
-    Handler handler = new Handler();
+    HandlerForStory handler = new HandlerForStory();
+    HandlerForSeasons handlerForSeasons = new HandlerForSeasons();
 
     @Override
     public String getBotUsername() {
@@ -160,10 +160,10 @@ public class TelegramBot extends TelegramLongPollingBot {
             automate = automate.nextState(what);
             switch (automate){
                 case Restart:
-                    execute(handler.Restart(who, what));
+                    execute(handler.restart(who, what));
                     break;
                 case Story:
-                    SendMessage smg = handler.Season(who , what);
+                    SendMessage smg = handlerForSeasons.getEpisodeFromSeasons(who , what);
                     execute(smg);
                     if(smg.getText().equals("Введите название из списка")){
                         automate = FinalStateAutomate.Start;
@@ -227,7 +227,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                 case Text:
                     switch (what) {
                         case "next" -> {
-                            SendMessage test = handler.Story(who, what, list, count);
+                            SendMessage test = handler.getStories(who, what, list, count);
                             SendMessage test2 = new SendMessage();
                             test2.setChatId(who);
                             test2.setText(("Конец гайда:"));
@@ -237,7 +237,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             execute(test);
                         }
                         case "before" -> {
-                            SendMessage test = handler.Story(who, what, list, count);
+                            SendMessage test = handler.getStories(who,what,list,count);
                             if (count > 1) {
                                 count--;
                             }
