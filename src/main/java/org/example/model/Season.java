@@ -21,7 +21,8 @@ public class Season extends Story {
         return seasonFlag;
     }
     public void setSeason(String season) throws IOException {
-        Map<String, ArrayList<String>> linkCheck = getEpisodesInSeasons(this);
+        HTMLParser htmlParser = new HTMLParser();
+        Map<String, ArrayList<String>> linkCheck = htmlParser.getEpisodesInSeasons(this);
         for (String key : linkCheck.keySet()){
             if (Check(key,season)){
                 seasonFlag = true;
@@ -36,9 +37,11 @@ public class Season extends Story {
      * @throws IOException
      */
     public String printSeasons() throws IOException {
-        ArrayList<String> keys = new ArrayList<>(getEpisodesInSeasons(this).keySet());
+        HTMLParser htmlParser = new HTMLParser();
+        ArrayList<String> keys = new ArrayList<>(htmlParser.getEpisodesInSeasons(this).keySet());
         StringBuilder list = new StringBuilder();
         for (String key : keys) list.append(key).append('\n');
         return list.toString();
     }
 }
+
