@@ -3,6 +3,7 @@ package org.example.telegram;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
+import org.example.model.HTMLParser;
 import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -30,6 +31,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     Story story = new Story();
     Season season = new Season();
     Episode episode = new Episode();
+    HTMLParser htmlParser = new HTMLParser();
     String list;
     /**
      * начальное состояние бота
@@ -202,7 +204,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         episode.setEpisode(what);
                         if (episode.getEpisode()!= null && episode.getEpisode().matches("[-+]?\\d+")) {
-                            list = episode.extractActions(episode);
+                            list = htmlParser.extractActions(episode);
                             String[] splitList = list.split("\n");
                             SendMessage test = new SendMessage();
                             test.setChatId(who);
@@ -260,3 +262,4 @@ public class TelegramBot extends TelegramLongPollingBot {
         }
     }
 }
+
