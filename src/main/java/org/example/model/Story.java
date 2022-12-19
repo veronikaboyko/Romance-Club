@@ -6,10 +6,17 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Story extends HTMLParser{
+public class Story {
     private final String path = "/Users/v/IdeaProjects/bot/data.txt";
     private boolean nameFlag;
     protected static String name;
+    protected Set<String> seasons;
+    protected  Map<String, ArrayList<String>> allSeasonsAndEpisodes;
+    public Story() throws IOException {
+        HTMLParser htmlParser = new HTMLParser();
+        this.allSeasonsAndEpisodes = htmlParser.getEpisodesInSeasons(this);
+        this.seasons = allSeasonsAndEpisodes.keySet();
+    }
     public boolean getNameFlag(){
         return nameFlag;
     }

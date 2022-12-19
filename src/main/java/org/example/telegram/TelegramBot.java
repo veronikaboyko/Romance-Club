@@ -3,6 +3,7 @@ package org.example.telegram;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
+import org.example.model.HTMLParser;
 import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -28,8 +29,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String token;
     SendMessage sm = new SendMessage();
     Story story = new Story();
-    Season season = new Season();
-    Episode episode = new Episode();
+    Season season;
+    Episode episode;
     String list;
     /**
      * начальное состояние бота
@@ -147,7 +148,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * телеграмм токен спрятный в properties
      */
-    public TelegramBot(String token, String botName) {
+    public TelegramBot(String token, String botName) throws IOException {
         this.token = token;
     }
 
@@ -157,7 +158,9 @@ public class TelegramBot extends TelegramLongPollingBot {
      */
     public void sendText(Long who, String what) {
         try {
+            System.out.println(automate);
             automate = automate.nextState(what);
+            System.out.println(automate);
             switch (automate){
                 case Restart:
                     execute(handler.restart(who, what));
@@ -170,6 +173,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     }
                     break;
                 case Seasonss:
+                    season = new Season(story);
+                    episode = new Episode(story, season);
                     if (what.equals("/back")) {
                         String list = story.printTitles();
                         sm.setChatId(who);
@@ -202,7 +207,8 @@ public class TelegramBot extends TelegramLongPollingBot {
                     } else {
                         episode.setEpisode(what);
                         if (episode.getEpisode()!= null && episode.getEpisode().matches("[-+]?\\d+")) {
-                            list = episode.extractActions(episode);
+                            HTMLParser htmlParser = new HTMLParser();
+                            list = htmlParser.extractActions(story, episode, season);
                             String[] splitList = list.split("\n");
                             SendMessage test = new SendMessage();
                             test.setChatId(who);

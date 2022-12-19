@@ -2,12 +2,21 @@ package org.example.model;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
-public class Season extends Story {
+public class Season{
     protected static String season;
     private boolean seasonFlag;
     protected String seasonNumber;
+    protected Collection<ArrayList<String>> episodes;
+    protected  Map<String, ArrayList<String>> allSeasonsAndEpisodes;
+    public Season(Story story) throws IOException {
+        HTMLParser htmlParser = new HTMLParser();
+        this.allSeasonsAndEpisodes = htmlParser.getEpisodesInSeasons(story);
+        this.episodes = allSeasonsAndEpisodes.values();
+    }
     public String getSeason() {
         return season;
     }
@@ -21,8 +30,7 @@ public class Season extends Story {
         return seasonFlag;
     }
     public void setSeason(String season) throws IOException {
-        Map<String, ArrayList<String>> linkCheck = getEpisodesInSeasons(this);
-        for (String key : linkCheck.keySet()){
+        for (String key : allSeasonsAndEpisodes.keySet()){
             if (Check(key,season)){
                 seasonFlag = true;
             }
@@ -36,9 +44,11 @@ public class Season extends Story {
      * @throws IOException
      */
     public String printSeasons() throws IOException {
-        ArrayList<String> keys = new ArrayList<>(getEpisodesInSeasons(this).keySet());
         StringBuilder list = new StringBuilder();
-        for (String key : keys) list.append(key).append('\n');
+        for (String key : allSeasonsAndEpisodes.keySet()) list.append(key).append('\n');
         return list.toString();
+    }
+    public boolean Check(String arg1, String arg2){
+        return Objects.equals(arg1, arg2);
     }
 }

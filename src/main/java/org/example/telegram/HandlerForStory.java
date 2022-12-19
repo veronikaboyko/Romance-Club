@@ -3,6 +3,8 @@ import org.example.model.Story;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+
 public class HandlerForStory {
     /**
      * проверка на существование следущего абзаца в истории
@@ -48,7 +50,7 @@ public class HandlerForStory {
     /**
      * Метод Restart возвращает в начало работы гайда
      */
-    public SendMessage restart(Long who, String what) throws FileNotFoundException{
+    public SendMessage restart(Long who, String what) throws IOException {
         Story story = new Story();
         SendMessage sm;
         String list = story.printTitles();
