@@ -35,7 +35,8 @@ public class Episode extends Season {
      * @throws IOException
      */
     public String printEpisodes() throws IOException {
-        ArrayList<String> keys = getEpisodesInSeasons(this).get(season);
+        HTMLParser htmlParser = new HTMLParser();
+        ArrayList<String> keys = htmlParser.getEpisodesInSeasons(this).get(season);
         StringBuilder list = new StringBuilder();
         for (String key : keys) list.append(key).append('\n');
         return list.toString();
