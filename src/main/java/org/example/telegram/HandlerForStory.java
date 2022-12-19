@@ -66,7 +66,7 @@ public class HandlerForStory {
      * @param count - итератор
      * @return абзац истории
      */
-    public SendMessage Story (Long who, String what , String list, int count){
+    public SendMessage getStories (Long who, String what , String list, int count){
         String[] splitList = list.split("\n");
         SendMessage test = new SendMessage();
         test.setChatId(who);
