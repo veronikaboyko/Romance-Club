@@ -8,3 +8,8 @@ The bot gives a brief retelling of the events of the selected episode, informati
 Type "/start" to get started, type "help" for help.
 
 Information taken from the site https://gamesisart.ru/guide/Romance_Club_Prohozhdenie.html#All
+Task0:
+1. работа в консоли
+2. вывод /help
+3. выбор сюжета, сезона и серии
+4. вывод информации о всех развилках в сюжете выбранной серии
