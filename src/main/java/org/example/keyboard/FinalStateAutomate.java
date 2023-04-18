@@ -82,4 +82,4 @@ public enum FinalStateAutomate {
      * @param string - аргумент принимающий определенную строчку( в данном случаи /restart)
      */
     public abstract FinalStateAutomate nextState(String string);
-    }
+}

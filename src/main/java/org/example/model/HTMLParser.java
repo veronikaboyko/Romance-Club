@@ -18,11 +18,11 @@ public class HTMLParser {
 
     private final String[] replacementTags =
             {"<font class=\"TextItem\">",
-            "</font> <font class=\"TextUp\">",
-            "</font>",
-            "&#34;",
-            "<font class=\"TextLove\">",
-            "<font class=\"TextGold\">"};
+                    "</font> <font class=\"TextUp\">",
+                    "</font>",
+                    "&#34;",
+                    "<font class=\"TextLove\">",
+                    "<font class=\"TextGold\">"};
 
     /**
      *
