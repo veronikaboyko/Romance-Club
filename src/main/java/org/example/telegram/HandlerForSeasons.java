@@ -2,6 +2,7 @@ package org.example.telegram;
 
 import org.example.model.Episode;
 import org.example.model.HTMLParser;
+import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
@@ -21,10 +22,8 @@ public class HandlerForSeasons{
         Story story = new Story();
         story.setName(what);
         if (story.getNameFlag()) {
-            HTMLParser htmlParser = new HTMLParser();
-            htmlParser.getEpisodesInSeasons(story);
-            Episode episode = new Episode();
-            String list = episode.printSeasons();
+            Season season = new Season(story);
+            String list = season.printSeasons();
             SendMessage sm = new SendMessage();
             sm.setChatId(who);
             sm.setText(list);

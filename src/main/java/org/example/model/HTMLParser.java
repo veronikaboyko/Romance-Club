@@ -1,5 +1,9 @@
 package org.example.model;
 
+import org.example.link.EpisodeLink;
+import org.example.link.LinkFactory;
+import org.example.link.StoryLink;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,8 +64,8 @@ public class HTMLParser {
      * @throws IOException
      */
     public Map<String, ArrayList<String>> getEpisodesInSeasons(Story story) throws IOException {
-        LinkFactory linkObj = new LinkFactory();
-        String link = linkObj.makeStoryLink(story);
+        LinkFactory linkObj = new StoryLink(story);
+        String link = linkObj.makeLink();
         String page = getPage(link);
         Pattern pattern = Pattern.compile ("<table>.+?</table>");
         Matcher matcher = pattern.matcher (page);
@@ -96,15 +100,15 @@ public class HTMLParser {
      * функция считывает информацию со страницы конкретного эпизода и выводит ее в консоль
      * @throws IOException
      */
-    public String extractActions(Episode episode) throws IOException {
+    public String extractActions(Story story, Episode episode, Season season) throws IOException {
         StringBuilder tmpString = new StringBuilder();
-        episode.setSeasonNumber(episode.getSeason().substring(episode.getSeason().length() - 1));
-        LinkFactory linkObj = new LinkFactory();
-        String link = linkObj.makeEpisodeLink(episode);
+        season.setSeasonNumber(season.getSeason().substring(season.getSeason().length() - 1));
+        LinkFactory linkObj = new EpisodeLink(story, season, episode);
+        String link = linkObj.makeLink();
         String page = getPage(link);
         StringBuilder startOfInformationBlock = new StringBuilder();
         startOfInformationBlock.append("<a name=\"Act_")
-                .append(episode.getSeasonNumber())
+                .append(season.getSeasonNumber())
                 .append("_")
                 .append(episode.getEpisodeNumber());
         Pattern pattern = Pattern.compile(startOfInformationBlock.append(".+?<br/><br/><br/>").toString());

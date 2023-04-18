@@ -20,8 +20,9 @@ public class StartBot {
 
         return properties.getProperty(key);
     }
-    public static void startTgBot() throws TelegramApiException {
+    public static void startTgBot() throws TelegramApiException, IOException {
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
+        System.out.println(1);
         TelegramBot bot = new TelegramBot(getFromProperty("config.properties", "token"), "Tutorial bot");
         botsApi.registerBot(bot);
     }
