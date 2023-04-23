@@ -17,7 +17,7 @@ public class UserService {
     public UserEntity inTable (Long chatId){
         return repo.findByChatId(chatId);
     }
-    public Boolean check(Long chatId){
+    public boolean check(Long chatId){
         return repo.getAdmin(chatId);
     }
 }

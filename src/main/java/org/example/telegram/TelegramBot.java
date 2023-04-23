@@ -1,15 +1,16 @@
 package org.example.telegram;
 
+import org.checkerframework.checker.units.qual.C;
 import org.example.JPA.UserEntity;
 import org.example.JPA.UserRepo;
 import org.example.JPA.UserService;
+import org.example.control.CommandTable;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
 import org.example.model.HTMLParser;
 import org.example.model.Season;
 import org.example.model.Story;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -32,7 +33,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String token;
     SendMessage sm = new SendMessage();
     Story story = new Story();
-    Season season;
+    public Season season;
     Episode episode;
     String list;
     /**
@@ -42,12 +43,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     HandlerForStory handler = new HandlerForStory();
     HandlerForSeasons handlerForSeasons = new HandlerForSeasons();
 
+
     @Override
     public String getBotUsername() {
         return "Tutorial bot";
     }
-    @Autowired
-    UserService service = new UserService();
+
+    UserService service;
 
     @Override
     public String getBotToken() {
@@ -65,65 +67,69 @@ public class TelegramBot extends TelegramLongPollingBot {
         String answer;
         if (update.hasMessage() && update.getMessage().hasText()) {
             long chatId = update.getMessage().getChatId();
-            if (update.getMessage().getText().equals("/add")){
-                if (!service.existsByChatId(chatId)){
-                    UserEntity entity = new UserEntity();
-                    entity.setChatId(chatId);
-                    entity.setSubscribe(false);
-                    service.save(entity);
-                    sendMessage(update,"That's OK!");
+            try {
+                CommandTable commandTable = new CommandTable(chatId, sm);
+
+                if (update.getMessage().getText().equals("/add")) {
+                    if (!service.existsByChatId(chatId)) {
+                        UserEntity entity = new UserEntity();
+                        entity.setChatId(chatId);
+                        entity.setSubscribe(false);
+                        service.save(entity);
+                        sendMessage(update, "That's OK!");
+                    } else sendMessage(update, "U are in table yet!");
                 }
-                else sendMessage(update, "U are in table yet!");
+                if (update.getMessage().getText().equals("/check")) {
+                    boolean flag = service.check(chatId);
+                    if (flag) sendMessage(update, "You are the admin");
+                }
+                if (update.getMessage().getText().equals("/start")) {
+                    automate = FinalStateAutomate.Start;
+                    SendMessage message = new SendMessage();// Create a message object object
+                    message.setChatId(chatId);
+                    message.setText(("Вы хотите начать?"));
+                    InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                    List<InlineKeyboardButton> rowInline = new ArrayList<>();
+                    InlineKeyboardButton button = new InlineKeyboardButton();
+                    button.setText("Да");
+                    button.setCallbackData("да");
+                    rowInline.add(button);
+                    // Set the keyboard to the markup
+                    rowsInline.add(rowInline);
+                    // Add it to the message
+                    markupInline.setKeyboard(rowsInline);
+                    message.setReplyMarkup(markupInline);
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                } else if (update.getMessage().getText().equals("/info")) {
+                    SendMessage message = commandTable.getCommandTable().get("/info");// Create a message object object
+                    InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
+                    List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
+                    List<InlineKeyboardButton> rowInline = new ArrayList<>();
+                    InlineKeyboardButton button = new InlineKeyboardButton();
+                    button.setText("Когда следующее обновление?");
+                    button.setCallbackData("Когда следующее обновление?");
+                    rowInline.add(button);
+                    // Set the keyboard to the markup
+                    rowsInline.add(rowInline);
+                    // Add it to the message
+                    markupInline.setKeyboard(rowsInline);
+                    message.setReplyMarkup(markupInline);
+                    try {
+                        execute(message); // Sending our message object to user
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    sendText(chatId, update.getMessage().getText());
+                }
             }
-            if (update.getMessage().getText().equals("/check")){
-                Boolean flag = service.check(chatId);
-                if (flag) sendMessage(update,"You are the admin");
-            }
-            if (update.getMessage().getText().equals("/start")) {
-                automate = FinalStateAutomate.Start;
-                SendMessage message = new SendMessage();// Create a message object object
-                message.setChatId(chatId);
-                message.setText(("Вы хотите начать?"));
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                InlineKeyboardButton button = new InlineKeyboardButton();
-                button.setText("Да");
-                button.setCallbackData("да");
-                rowInline.add(button);
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            } else if (update.getMessage().getText().equals("/info")) {
-                SendMessage message = new SendMessage();// Create a message object object
-                message.setChatId(chatId);
-                message.setText(("Последнее обновление игры - 10 ноября 2022 года"));
-                InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();
-                List<List<InlineKeyboardButton>> rowsInline = new ArrayList<>();
-                List<InlineKeyboardButton> rowInline = new ArrayList<>();
-                InlineKeyboardButton button = new InlineKeyboardButton();
-                button.setText("Когда следующее обновление?");
-                button.setCallbackData("Когда следующее обновление?");
-                rowInline.add(button);
-                // Set the keyboard to the markup
-                rowsInline.add(rowInline);
-                // Add it to the message
-                markupInline.setKeyboard(rowsInline);
-                message.setReplyMarkup(markupInline);
-                try {
-                    execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                sendText(chatId, update.getMessage().getText());
+            catch (IOException e) {
+                throw new RuntimeException(e);
             }
         } else if (update.hasCallbackQuery()) {
             // Set variables
@@ -167,8 +173,9 @@ public class TelegramBot extends TelegramLongPollingBot {
     /**
      * телеграмм токен спрятный в properties
      */
-    public TelegramBot(String token, String botName) throws IOException {
+    public TelegramBot(String token, String botName,UserService service) throws IOException {
         this.token = token;
+        this.service = service;
     }
 
     /**
@@ -177,9 +184,9 @@ public class TelegramBot extends TelegramLongPollingBot {
      */
     public void sendText(Long who, String what) {
         try {
-            System.out.println(automate);
+            //System.out.println(automate);
             automate = automate.nextState(what);
-            System.out.println(automate);
+            //System.out.println(automate);
             switch (automate){
                 case Restart:
                     execute(handler.restart(who, what));

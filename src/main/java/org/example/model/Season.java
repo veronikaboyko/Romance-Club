@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Season{
-    protected static String season;
+    public static String season;
     private boolean seasonFlag;
     protected String seasonNumber;
     protected Collection<ArrayList<String>> episodes;

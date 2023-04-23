@@ -10,5 +10,5 @@ public interface UserRepo extends CrudRepository<UserEntity, Long> {
     boolean existsByChatId(Long chatId);
     UserEntity findByChatId(Long chatId);
     @Query(nativeQuery = true,value = "select admin from users where :chatId = chatid")
-    Boolean getAdmin(Long chatId);
+    boolean getAdmin(Long chatId);
 }
