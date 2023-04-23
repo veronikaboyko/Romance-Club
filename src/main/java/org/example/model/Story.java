@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Story {
-    private final String path = "/Users/v/IdeaProjects/bot/data.txt";
+    private final String path = "C:/Users/admin/Desktop/bot2/data.txt";
     private boolean nameFlag;
     protected static String name;
     protected Set<String> seasons;

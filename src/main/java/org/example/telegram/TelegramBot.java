@@ -1,11 +1,15 @@
 package org.example.telegram;
 
+import org.example.JPA.UserEntity;
+import org.example.JPA.UserRepo;
+import org.example.JPA.UserService;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
 import org.example.model.HTMLParser;
 import org.example.model.Season;
 import org.example.model.Story;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -18,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 import static java.lang.Math.toIntExact;
 
 public class TelegramBot extends TelegramLongPollingBot {
@@ -43,6 +46,8 @@ public class TelegramBot extends TelegramLongPollingBot {
     public String getBotUsername() {
         return "Tutorial bot";
     }
+    @Autowired
+    UserService service = new UserService();
 
     @Override
     public String getBotToken() {
@@ -60,6 +65,20 @@ public class TelegramBot extends TelegramLongPollingBot {
         String answer;
         if (update.hasMessage() && update.getMessage().hasText()) {
             long chatId = update.getMessage().getChatId();
+            if (update.getMessage().getText().equals("/add")){
+                if (!service.existsByChatId(chatId)){
+                    UserEntity entity = new UserEntity();
+                    entity.setChatId(chatId);
+                    entity.setSubscribe(false);
+                    service.save(entity);
+                    sendMessage(update,"That's OK!");
+                }
+                else sendMessage(update, "U are in table yet!");
+            }
+            if (update.getMessage().getText().equals("/check")){
+                Boolean flag = service.check(chatId);
+                if (flag) sendMessage(update,"You are the admin");
+            }
             if (update.getMessage().getText().equals("/start")) {
                 automate = FinalStateAutomate.Start;
                 SendMessage message = new SendMessage();// Create a message object object
@@ -263,6 +282,18 @@ public class TelegramBot extends TelegramLongPollingBot {
             throw new RuntimeException(e);      //Any error will be printed here
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    public void sendMessage(Update update, String text){
+        try {
+            execute(
+                    SendMessage.builder()
+                            .chatId((update.hasMessage()) ? update.getMessage().getChatId() : update.getCallbackQuery().getFrom().getId())
+                            .text(text)
+                            .build());
+        }
+        catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 }
