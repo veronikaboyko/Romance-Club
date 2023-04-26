@@ -16,7 +16,7 @@ public class MakeKeyBoard {
      * /before - кнопки для перехода назад
      */
     public synchronized SendMessage setButtons(SendMessage sendMessage) throws TelegramApiException {
-        // Создаем клавиуатуру
+        // Создаем клавиатуру
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         sendMessage.setReplyMarkup(replyKeyboardMarkup);
         replyKeyboardMarkup.setSelective(true);
@@ -39,7 +39,7 @@ public class MakeKeyBoard {
         // Добавляем все строчки клавиатуры в список
         keyboard.add(keyboardFirstRow);
         keyboard.add(keyboardSecondRow);
-        // и устанваливаем этот список нашей клавиатуре
+        // и устанавливаем этот список нашей клавиатуре
         replyKeyboardMarkup.setKeyboard(keyboard);
         return sendMessage;
     }
