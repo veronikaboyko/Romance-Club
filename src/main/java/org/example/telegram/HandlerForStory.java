@@ -50,7 +50,7 @@ public class HandlerForStory {
     /**
      * Метод Restart возвращает в начало работы гайда
      */
-    public SendMessage restart(Long who, String what) throws IOException {
+    public SendMessage restart(Long who) throws IOException {
         Story story = new Story();
         SendMessage sm;
         String list = story.printTitles();

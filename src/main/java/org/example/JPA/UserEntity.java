@@ -3,8 +3,11 @@ package org.example.JPA;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.keyboard.FinalStateAutomate;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.Instant;
 
 @Entity
 @Setter
@@ -19,11 +22,11 @@ public class UserEntity {
     private Long chatId;
     private Boolean subscribe;
     private Boolean admin;
+    private FinalStateAutomate state;
+    private Timestamp timer;
 
-    @Override
-    public String toString(){
-        return "id = "+id+"\n" +
-                "chatId = "+chatId+"\n" +
-                "sub = "+subscribe;
+    @PrePersist
+    public void perSiest(){
+        timer = Timestamp.from(Instant.now());
     }
 }

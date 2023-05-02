@@ -13,65 +13,65 @@ public enum FinalStateAutomate {
     /**
      * состояние при вызове /restart, которое возвращает в начало работы бота
      */
-    Restart{
+    RESTART {
         @Override
         public FinalStateAutomate nextState(String string) {
-            return Story;
+            return STORY;
         }
     },
     /**
      * начальное состояние при вызове комнады /start
      */
-    Start{
+    START {
         @Override
         public FinalStateAutomate nextState(String string) {
-            return Story;
+            return STORY;
         }
     },
     /**
      * состояние при работе с историей
      */
-    Story{
+    STORY {
         @Override
         public FinalStateAutomate nextState(String string) {
             if(string.equals("/restart")){
-                return Restart;
+                return RESTART;
             }
-            return Seasonss;
+            return SEASONSS;
         }
     },
     /**
      * состояние при работе с сезонами
      */
-    Seasonss{
+    SEASONSS {
         @Override
         public FinalStateAutomate nextState(String string) {
             if(string.equals("/restart")){
-                return Restart;
+                return RESTART;
             }
-            return Episode;
+            return EPISODE;
         }
     },
     /**
      * состояние при работе с эпизодами
      */
-    Episode{
+    EPISODE {
         @Override
         public FinalStateAutomate nextState(String string) {
             if(string.equals("/restart")){
-                return Restart;
+                return RESTART;
             }
-            return Text;
+            return TEXT;
         }
     },
     /**
      * состояние при работе с текстом конкретной истории
      */
-    Text{
+    TEXT {
         @Override
         public FinalStateAutomate nextState(String string) {
             if(string.equals("/restart")){
-                return Restart;
+                return RESTART;
             }
             return this;
         }
