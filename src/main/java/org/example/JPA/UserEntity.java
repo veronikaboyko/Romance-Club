@@ -7,6 +7,7 @@ import org.example.keyboard.FinalStateAutomate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.Instant;
 
 @Entity
@@ -22,11 +23,22 @@ public class UserEntity {
     private Long chatId;
     private Boolean subscribe;
     private Boolean admin;
-    private FinalStateAutomate state;
-    private Timestamp timer;
+    private FinalStateAutomate state = FinalStateAutomate.STORY;
+    private Timestamp timer = Timestamp.from(Instant.now());
+    private Long theMostLongTime = 0L;
+    private FinalStateAutomate stateTimer;
 
-    @PrePersist
-    public void perSiest(){
-        timer = Timestamp.from(Instant.now());
+    public void setState(FinalStateAutomate state){
+        if (!this.state.equals(state)){
+            if(Duration.between(timer.toInstant(), Instant.now()).compareTo(Duration.ofSeconds(theMostLongTime)) > 0){
+                stateTimer = this.state;
+                theMostLongTime = Duration.between(timer.toInstant(), Instant.now()).toSeconds();
+            }
+            this.state = state;
+            timer = Timestamp.from(Instant.now());
+        }
     }
+//    public FinalStateAutomate getState(){
+//        return state;
+//    }
 }

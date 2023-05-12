@@ -32,6 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public Season season;
     public Episode episode;
     public String list;
+    public UserEntity entity = new UserEntity();
     /**
      * начальное состояние бота
      */
@@ -51,7 +52,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         return token;
     }
 
-    private void handleTextMessage(Message message) {
+    private void handleTextMessage(Message message, UserEntity user) {
         CommandTable commandTable = new CommandTable(this);
         switch (message.getText()) {
             case "/start" -> commandTable.handleStartCommand(message);
@@ -98,16 +99,17 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
-            handleTextMessage(update.getMessage());
+//            System.out.println(1);
             long chatId = update.getMessage().getChatId();
+//            UserEntity entity = new UserEntity();
+            handleTextMessage(update.getMessage(), entity);
             try {
 
                 if (update.getMessage().getText().equals("/add")) {
                     if (!service.existsByChatId(chatId)) {
-                        UserEntity entity = new UserEntity();
                         entity.setChatId(chatId);
                         entity.setSubscribe(false);
-                        service.save(entity);
+                        service.save(entity, chatId);
                         sendMessage(update, "That's OK!");
                     } else sendMessage(update, "U are in table yet!");
                 }
@@ -116,6 +118,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     if (flag) sendMessage(update, "You are the admin");
                     else sendMessage(update, "You are not admin");
                 }
+//                handleTextMessage(update.getMessage(),entity);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

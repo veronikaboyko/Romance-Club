@@ -7,7 +7,8 @@ import org.springframework.stereotype.Service;
 public class UserService {
     @Autowired
     private UserRepo repo;
-    public void save(UserEntity entity){
+    public void save(UserEntity entity,Long chatId){
+        repo.findByChatId(chatId);
         repo.save(entity);
     }
     public boolean existsByChatId(Long chatId){
