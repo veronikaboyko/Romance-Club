@@ -8,3 +8,5 @@ out
 gen
 /target
 pom.xml
+.resources
+postgres-data
