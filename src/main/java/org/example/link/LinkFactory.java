@@ -5,6 +5,9 @@ import org.example.model.Episode;
 import org.example.model.Season;
 import org.example.model.Story;
 
+/**
+ * абстрактный класс для ссылок для всех состояний бота.
+ */
 public abstract class LinkFactory {
   protected final String https = "https://gamesisart.ru/guide/";
   protected final String html = ".html";

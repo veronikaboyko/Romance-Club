@@ -5,10 +5,10 @@ import org.example.model.Season;
 import org.example.model.Story;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
-/** Класс для работы телеграмм бота с Сезонами */
+/** Класс для работы телеграмм бота с Сезонами. */
 public class HandlerForSeasons {
   /**
-   * метод для вывода эпизодов в телеграмм
+   * метод для вывода эпизодов в телеграмм.
    *
    * @param who - id
    * @param what - что ввел пользователь

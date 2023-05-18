@@ -14,6 +14,9 @@ import org.example.link.EpisodeLink;
 import org.example.link.LinkFactory;
 import org.example.link.StoryLink;
 
+/**
+ * Класс для парса ссылок
+ */
 public class HtmlParser {
 
   private final String[] replacementTags = {
@@ -26,6 +29,8 @@ public class HtmlParser {
   };
 
   /**
+   * метод получения страницы на сайте.
+   *
    * @param link ссылка на страницу
    * @return содержание страницы
    */
@@ -56,7 +61,7 @@ public class HtmlParser {
 
   /**
    * функция считывает со страницы информацию о количестве сезонов и количестве эпизодов в каждом
-   * сезоне
+   * сезоне.
    *
    * @return map ключ - сезон, значение - массив эпизодов этого сезона
    * @throws IOException
@@ -96,7 +101,7 @@ public class HtmlParser {
     return map;
   }
   /**
-   * функция считывает информацию со страницы конкретного эпизода и выводит ее в консоль
+   * функция считывает информацию со страницы конкретного эпизода и выводит ее в консоль.
    *
    * @throws IOException
    */

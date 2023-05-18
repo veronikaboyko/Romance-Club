@@ -3,6 +3,9 @@ package org.example.link;
 import java.io.FileNotFoundException;
 import org.example.model.Story;
 
+/**
+ * класс для ссылок на истории.
+ */
 
 public class StoryLink extends LinkFactory {
 
@@ -10,6 +13,8 @@ public class StoryLink extends LinkFactory {
     super(story);
   }
   /**
+   * Метод получения ссылки на истории.
+   *
    * @return ссылка на страницу истории с информацией
    */
 

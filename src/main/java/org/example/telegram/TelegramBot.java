@@ -18,8 +18,9 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/** класс телеграмм бота. */
 public class TelegramBot extends TelegramLongPollingBot {
-  /** переменная для итерации по истории */
+  /** переменная для итерации по истории. */
   public int count = 1;
 
   private final String token;
@@ -29,7 +30,7 @@ public class TelegramBot extends TelegramLongPollingBot {
   public Episode episode;
   public String list;
   public UserEntity entity = new UserEntity();
-  /** начальное состояние бота */
+  /** начальное состояние бота. */
   public FinalStateAutomate automate = FinalStateAutomate.START;
 
   public HandlerForStory handler = new HandlerForStory();
@@ -90,14 +91,12 @@ public class TelegramBot extends TelegramLongPollingBot {
   /**
    * метод работает с телеграмм ботом: проверяет есть ли новое сообщение в боте обрабатывает его и
    * выводит Inline клаваиатуру при запуске Выводит информацию об обновлении гайда и уточнение о
-   * запуске бота
+   * запуске бота.
    */
   @Override
   public void onUpdateReceived(Update update) {
     if (update.hasMessage() && update.getMessage().hasText()) {
-      //            System.out.println(1);
       long chatId = update.getMessage().getChatId();
-      //            UserEntity entity = new UserEntity();
       handleTextMessage(update.getMessage());
       try {
 
@@ -119,7 +118,6 @@ public class TelegramBot extends TelegramLongPollingBot {
             sendMessage(update, "You are not admin");
           }
         }
-        //                handleTextMessage(update.getMessage(),entity);
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
@@ -165,14 +163,15 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
   }
 
-  /** телеграмм токен спрятный в properties */
+  /** телеграмм токен спрятный в properties. */
   public TelegramBot(String token, String botName, UserService service) throws IOException {
     this.token = token;
     this.service = service;
   }
 
   /**
-   * логика бота Проверка состояния бота и в зависимости от состояния выводит необходимую информацию
+   * логика бота Проверка состояния бота и в зависимости от состояния выводит необходимую
+   * информацию.
    */
   public void sendMessage(Update update, String text) {
     try {

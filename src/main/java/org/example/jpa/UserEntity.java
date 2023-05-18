@@ -14,6 +14,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.example.keyboard.FinalStateAutomate;
 
+/**
+ * класс пользователя для базы данных.
+ */
+
 @Entity
 @Setter
 @Getter
@@ -43,7 +47,4 @@ public class UserEntity {
       timer = Timestamp.from(Instant.now());
     }
   }
-//    public FinalStateAutomate getState(){
-//        return state;
-//    }
 }

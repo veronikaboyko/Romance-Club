@@ -4,24 +4,24 @@ package org.example.keyboard;
  * состояния бота, используемые для передвижению по логике работы бота Restart - начальное Story -
  * состоянии на шаге вывода историй Seasonss - состоянии на шаге вывода сезонов Episode - состоянии
  * на шаге вывода епизодов Text - состояние при работе с конкретной историе метод nextState - для
- * перехода между состояниями
+ * перехода между состояниями.
  */
 public enum FinalStateAutomate {
-  /** состояние при вызове /restart, которое возвращает в начало работы бота */
+  /** состояние при вызове /restart, которое возвращает в начало работы бота. */
   RESTART {
     @Override
     public FinalStateAutomate nextState(String string) {
       return STORY;
     }
   },
-  /** начальное состояние при вызове комнады /start */
+  /** начальное состояние при вызове комнады /start. */
   START {
     @Override
     public FinalStateAutomate nextState(String string) {
       return STORY;
     }
   },
-  /** состояние при работе с историей */
+  /** состояние при работе с историей. */
   STORY {
     @Override
     public FinalStateAutomate nextState(String string) {
@@ -31,7 +31,7 @@ public enum FinalStateAutomate {
       return SEASONSS;
     }
   },
-  /** состояние при работе с сезонами */
+  /** состояние при работе с сезонами. */
   SEASONSS {
     @Override
     public FinalStateAutomate nextState(String string) {
@@ -41,7 +41,7 @@ public enum FinalStateAutomate {
       return EPISODE;
     }
   },
-  /** состояние при работе с эпизодами */
+  /** состояние при работе с эпизодами. */
   EPISODE {
     @Override
     public FinalStateAutomate nextState(String string) {
@@ -51,7 +51,7 @@ public enum FinalStateAutomate {
       return TEXT;
     }
   },
-  /** состояние при работе с текстом конкретной истории */
+  /** состояние при работе с текстом конкретной истории. */
   TEXT {
     @Override
     public FinalStateAutomate nextState(String string) {
@@ -63,7 +63,7 @@ public enum FinalStateAutomate {
   };
 
   /**
-   * абстрактный метод который переводит текущее состояние в следующее
+   * абстрактный метод который переводит текущее состояние в следующее.
    *
    * @param string - аргумент принимающий определенную строчку( в данном случаи /restart)
    */

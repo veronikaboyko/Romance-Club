@@ -6,6 +6,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * класс для работы с сезонами.
+ */
 public class Season {
   public static String season;
   private boolean seasonFlag;
@@ -35,6 +38,11 @@ public class Season {
     return seasonFlag;
   }
 
+  /**
+   * метод для установаления конкретного сезона.
+   * @param season - название сезона
+   * @throws IOException
+   */
   public void setSeason(String season) throws IOException {
     for (String key : allSeasonsAndEpisodes.keySet()) {
       if (check(key, season)) {
@@ -46,7 +54,7 @@ public class Season {
     }
   }
   /**
-   * функция выводит на экран количество доступных сезонов
+   * функция выводит на экран количество доступных сезонов.
    *
    * @throws IOException
    */

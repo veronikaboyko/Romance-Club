@@ -4,9 +4,12 @@ import java.io.IOException;
 import org.example.model.Story;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 
+/**
+ * класс для работы бота с историями.
+ */
 public class HandlerForStory {
   /**
-   * проверка на существование следущего абзаца в истории
+   * проверка на существование следущего абзаца в истории.
    *
    * @param what - то что вводит пользователь
    * @param length - длина всей истории
@@ -18,7 +21,7 @@ public class HandlerForStory {
   }
 
   /**
-   * проверка на существование предыдущего абзаца в истории
+   * проверка на существование предыдущего абзаца в истории.
    *
    * @param what - то что вводит пользователь
    * @param count - номер абзаца в истории
@@ -29,7 +32,7 @@ public class HandlerForStory {
   }
 
   /**
-   * проверка достижения начала истории
+   * проверка достижения начала истории.
    *
    * @param count - номер абзаца в истории
    * @return возвращает true если достигли начала
@@ -39,7 +42,7 @@ public class HandlerForStory {
   }
 
   /**
-   * проверка на достижение конца истории
+   * проверка на достижение конца истории.
    *
    * @param what - то что вводит пользователь
    * @param length - длина всей истории
@@ -49,7 +52,8 @@ public class HandlerForStory {
   private boolean conditionToEnd(String what, int count, int length) {
     return count == length - 1 && what.equals("next");
   }
-  /** Метод Restart возвращает в начало работы гайда */
+  /** Метод Restart возвращает в начало работы гайда. */
+
   public SendMessage restart(Long who) throws IOException {
     Story story = new Story();
     SendMessage sm;
@@ -59,7 +63,7 @@ public class HandlerForStory {
   }
 
   /**
-   * Метод Story работает с конкретной историей: возможно переключение на абзац вперед/назад
+   * Метод Story работает с конкретной историей: возможно переключение на абзац вперед/назад.
    *
    * @param who - id пользователя
    * @param what - что ввел пользователь

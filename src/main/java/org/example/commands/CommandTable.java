@@ -11,6 +11,9 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * класс для работы с командами /back,/restart,before,next,start,info.
+ */
 public class CommandTable {
   TelegramBot bot;
 
@@ -18,8 +21,13 @@ public class CommandTable {
     this.bot = bot;
   }
 
-  public void handleStartCommand(Message m) {
-    long chatId = m.getChatId();
+  /**
+   * метод для работы с командой start.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleStartCommand(Message messageUser) {
+    long chatId = messageUser.getChatId();
     bot.automate = FinalStateAutomate.START;
     SendMessage message = new SendMessage();
     message.setChatId(chatId);
@@ -41,8 +49,13 @@ public class CommandTable {
     }
   }
 
-  public void handleInfoCommand(Message m) {
-    long chatId = m.getChatId();
+  /**
+   * Метод для работы с info.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleInfoCommand(Message messageUser) {
+    long chatId = messageUser.getChatId();
     SendMessage message = new SendMessage();
     message.setChatId(chatId);
     message.setText("Последнее обновление игры - 5 апреля 2023 года");
@@ -63,18 +76,28 @@ public class CommandTable {
     }
   }
 
-  public void handleRestartCommand(Message m) {
+  /**
+   * Метод для команды restart.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleRestartCommand(Message messageUser) {
     try {
-      long chatId = m.getChatId();
+      long chatId = messageUser.getChatId();
       bot.execute(bot.handler.restart(chatId));
     } catch (TelegramApiException | IOException e) {
       e.printStackTrace();
     }
   }
 
-  public void handleBackCommand(Message m) {
+  /**
+   * Метод для работы с командой /back.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleBackCommand(Message messageUser) {
     try {
-      long chatId = m.getChatId();
+      long chatId = messageUser.getChatId();
       SendMessage sm = new SendMessage();
       switch (bot.automate) {
         case SEASONSS -> {
@@ -109,10 +132,15 @@ public class CommandTable {
     }
   }
 
-  public void handleNextCommand(Message m) {
+  /**
+   * метод для работы с командой next.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleNextCommand(Message messageUser) {
     try {
-      long chatId = m.getChatId();
-      String text = m.getText();
+      long chatId = messageUser.getChatId();
+      String text = messageUser.getText();
       SendMessage test = bot.handler.getStories(chatId, text, bot.list, bot.count);
       SendMessage test2 = new SendMessage();
       test2.setChatId(chatId);
@@ -126,10 +154,15 @@ public class CommandTable {
     }
   }
 
-  public void handleBeforeCommand(Message m) {
+  /**
+   * Метод для работы с командой before.
+   *
+   * @param messageUser - то что ввел пользователь
+   */
+  public void handleBeforeCommand(Message messageUser) {
     try {
-      long chatId = m.getChatId();
-      String text = m.getText();
+      long chatId = messageUser.getChatId();
+      String text = messageUser.getText();
       SendMessage test = bot.handler.getStories(chatId, text, bot.list, bot.count);
       if (bot.count > 1) {
         bot.count--;

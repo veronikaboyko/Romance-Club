@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+/**
+ * класс Episode.
+ */
 public class Episode {
 
   private String episode;
@@ -13,7 +16,6 @@ public class Episode {
   public Episode(Story story, Season season) throws IOException {
     HtmlParser htmlParser = new HtmlParser();
     this.allEpisodes = htmlParser.getEpisodesInSeasons(story).values();
-    System.out.println(allEpisodes);
   }
 
   public String getEpisodeNumber() {
@@ -24,6 +26,11 @@ public class Episode {
     this.episodeNumber = episodeNumber;
   }
 
+  /**
+   * метод для уставновления эпизода.
+   *
+   * @param episode - название эпизода
+   */
   public void setEpisode(String episode) {
     try {
       Integer.parseInt(episode);
@@ -33,11 +40,16 @@ public class Episode {
     }
   }
 
+  /**
+   * метод для получения эпизода.
+   * @return - episode
+   */
+
   public String getEpisode() {
     return episode;
   }
   /**
-   * функция выводит на экран количество и названия всех доступных эпизодов
+   * функция выводит на экран количество и названия всех доступных эпизодов.
    *
    * @throws IOException
    */

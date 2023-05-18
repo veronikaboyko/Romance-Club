@@ -8,9 +8,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.Keyboard
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * класс клавиатуры в боте.
+ */
 public class MakeKeyBoard {
   /**
-   * создание клавиатуры с кнопками /next - для перехода вперед /before - кнопки для перехода назад
+   * создание клавиатуры с кнопками /next - для перехода вперед /before - кнопки для перехода назад.
    */
   public synchronized SendMessage setButtons(SendMessage sendMessage) throws TelegramApiException {
     // Создаем клавиуатуру

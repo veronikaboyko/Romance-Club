@@ -12,6 +12,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * класс для работы с историями.
+ */
 public class Story {
   private boolean nameFlag;
   protected static String name;
@@ -71,11 +74,8 @@ public class Story {
   public boolean check(String arg1, String arg2) {
     return Objects.equals(arg1, arg2);
   }
-  /**
-   * функция выводит на экран названия всех доступных историй
-   *
-   */
 
+  /** функция выводит на экран названия всех доступных историй */
   public String printTitles() throws FileNotFoundException {
     ArrayList<String> keys = new ArrayList<>(makeDictNames().keySet());
     StringBuilder list = new StringBuilder();

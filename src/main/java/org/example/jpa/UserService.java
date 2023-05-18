@@ -3,6 +3,9 @@ package org.example.jpa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * класс для работы с пользователем в базе данных.
+ */
 @Service
 public class UserService {
   @Autowired private UserRepo repo;

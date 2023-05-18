@@ -5,6 +5,9 @@ import org.example.model.Episode;
 import org.example.model.Season;
 import org.example.model.Story;
 
+/**
+ * класс ссылки на епизоды.
+ */
 public class EpisodeLink extends LinkFactory {
 
   public EpisodeLink(Story story, Season season, Episode episode) {
@@ -12,8 +15,10 @@ public class EpisodeLink extends LinkFactory {
   }
 
   /**
+   * метод получения ссылки на епизоды.
+   *
    * @return ссылка на страницу конкретного эпизода с информацией
-   * @throws FileNotFoundException
+   * @throws FileNotFoundException - ошибка отсутствия файла с историями
    */
   @Override
   public String makeLink() throws FileNotFoundException {

@@ -13,6 +13,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+/**
+ * Классы для смены состояний бота.
+ */
 public class StateHandler {
 
   TelegramBot bot;
@@ -23,10 +26,15 @@ public class StateHandler {
     this.commandTable = commandTable;
   }
 
-  public void storyState(Message m) {
+  /**
+   * Метод выполенения состояния STORY.
+   *
+   * @param messageUser - то что ввел пользователь в боте
+   */
+  public void storyState(Message messageUser) {
     try {
-      long chatId = m.getChatId();
-      String text = m.getText();
+      long chatId = messageUser.getChatId();
+      String text = messageUser.getText();
       HandlerForSeasons handlerForSeasons = new HandlerForSeasons();
       bot.story = new Story();
       SendMessage smg = handlerForSeasons.getEpisodeFromSeasons(chatId, text);
@@ -39,15 +47,20 @@ public class StateHandler {
     }
   }
 
-  public void seasonsState(Message m) {
+  /**
+   * Меняет выполнения  состояние SEASONSS.
+   *
+   * @param messageUser - то что вводить пользователь
+   */
+  public void seasonsState(Message messageUser) {
     try {
-      long chatId = m.getChatId();
-      String text = m.getText();
+      long chatId = messageUser.getChatId();
+      String text = messageUser.getText();
       bot.season = new Season(bot.story);
       bot.episode = new Episode(bot.story, bot.season);
       SendMessage sm = new SendMessage();
       if (text.equals("/back")) {
-        commandTable.handleBackCommand(m);
+        commandTable.handleBackCommand(messageUser);
       } else {
         bot.season.setSeason(text);
         if (bot.season.getSeasonFlag()) {
@@ -67,13 +80,18 @@ public class StateHandler {
       throw new RuntimeException(ex);
     }
   }
+  /**
+   * Меняет выполнения  состояние EPISODE.
+   *
+   * @param messageUser - то что вводить пользователь
+   */
 
-  public void episodeState(Message m) {
+  public void episodeState(Message messageUser) {
     try {
-      long chatId = m.getChatId();
-      String text = m.getText();
+      long chatId = messageUser.getChatId();
+      String text = messageUser.getText();
       if (text.equals("/back")) {
-        commandTable.handleBackCommand(m);
+        commandTable.handleBackCommand(messageUser);
       } else {
         bot.episode.setEpisode(text);
         if (bot.episode.getEpisode() != null && bot.episode.getEpisode().matches("[-+]?\\d+")) {
