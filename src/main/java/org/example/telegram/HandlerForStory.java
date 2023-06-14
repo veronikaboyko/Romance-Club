@@ -11,24 +11,24 @@ public class HandlerForStory {
   /**
    * проверка на существование следущего абзаца в истории.
    *
-   * @param what - то что вводит пользователь
+   * @param whatUserSend - то что вводит пользователь
    * @param length - длина всей истории
    * @param count - номер абзаца в истории
    * @return условие существования
    */
-  private boolean conditionToNext(String what, int length, int count) {
-    return (what.equals("next") && count < length - 1);
+  private boolean conditionToNext(String whatUserSend, int length, int count) {
+    return (whatUserSend.equals("next") && count < length - 1);
   }
 
   /**
    * проверка на существование предыдущего абзаца в истории.
    *
-   * @param what - то что вводит пользователь
+   * @param whatUserSend - то что вводит пользователь
    * @param count - номер абзаца в истории
    * @return условие существования
    */
-  private boolean conditionToBefore(String what, int count) {
-    return (what.equals("before") && count > 1);
+  private boolean conditionToBefore(String whatUserSend, int count) {
+    return (whatUserSend.equals("before") && count > 1);
   }
 
   /**
@@ -44,44 +44,44 @@ public class HandlerForStory {
   /**
    * проверка на достижение конца истории.
    *
-   * @param what - то что вводит пользователь
+   * @param whatUserSend - то что вводит пользователь
    * @param length - длина всей истории
    * @param count - номер абзаца в истории
    * @return условие достижения конца истории
    */
-  private boolean conditionToEnd(String what, int count, int length) {
-    return count == length - 1 && what.equals("next");
+  private boolean conditionToEnd(String whatUserSend, int count, int length) {
+    return count == length - 1 && whatUserSend.equals("next");
   }
   /** Метод Restart возвращает в начало работы гайда. */
 
-  public SendMessage restart(Long who) throws IOException {
+  public SendMessage restart(Long user) throws IOException {
     Story story = new Story();
     SendMessage sm;
-    String list = story.printTitles();
-    sm = SendMessage.builder().chatId(who.toString()).text(list).build();
+    String titles = story.printTitles();
+    sm = SendMessage.builder().chatId(user.toString()).text(titles).build();
     return sm;
   }
 
   /**
    * Метод Story работает с конкретной историей: возможно переключение на абзац вперед/назад.
    *
-   * @param who - id пользователя
-   * @param what - что ввел пользователь
-   * @param list - сама история
+   * @param user - id пользователя
+   * @param whatUserSend - что ввел пользователь
+   * @param listOfStoryText - сама история
    * @param count - итератор
    * @return абзац истории
    */
-  public SendMessage getStories(Long who, String what, String list, int count) {
-    String[] splitList = list.split("\n");
+  public SendMessage getStories(Long user, String whatUserSend, String listOfStoryText, int count) {
+    String[] splitList = listOfStoryText.split("\n");
     SendMessage test = new SendMessage();
-    test.setChatId(who);
-    if (conditionToNext(what, splitList.length, count)) {
+    test.setChatId(user);
+    if (conditionToNext(whatUserSend, splitList.length, count)) {
       test.setText((splitList[count + 1]));
-    } else if (conditionToBefore(what, count)) {
+    } else if (conditionToBefore(whatUserSend, count)) {
       test.setText((splitList[count - 1]));
     } else if (conditionToStart(count)) {
       test.setText(("Начало гайда:"));
-    } else if (conditionToEnd(what, count, splitList.length)) {
+    } else if (conditionToEnd(whatUserSend, count, splitList.length)) {
       test.setText(("Конец гайда:"));
     }
     return test;

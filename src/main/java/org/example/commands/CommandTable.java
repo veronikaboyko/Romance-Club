@@ -3,6 +3,9 @@ package org.example.commands;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.example.jpa.UserEntity;
+import org.example.jpa.UserService;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.telegram.TelegramBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -16,6 +19,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  */
 public class CommandTable {
   TelegramBot bot;
+  UserService service;
+  public UserEntity entity = new UserEntity();
 
   public CommandTable(TelegramBot bot) {
     this.bot = bot;
@@ -47,6 +52,10 @@ public class CommandTable {
     } catch (TelegramApiException e) {
       e.printStackTrace();
     }
+  }
+
+  public void handleAdminCommand() {
+    System.out.println("check");
   }
 
   /**

@@ -1,6 +1,9 @@
 package org.example.commands;
 
 import java.io.IOException;
+
+import org.example.jpa.StateEntity2;
+import org.example.jpa.StateEntity2Repo;
 import org.example.keyboard.FinalStateAutomate;
 import org.example.keyboard.MakeKeyBoard;
 import org.example.model.Episode;
@@ -20,10 +23,12 @@ public class StateHandler {
 
   TelegramBot bot;
   CommandTable commandTable;
+  StateEntity2Repo stateEntity2Repo;
 
-  public StateHandler(TelegramBot bot, CommandTable commandTable) {
+  public StateHandler(TelegramBot bot, CommandTable commandTable,StateEntity2Repo stateEntity2Repo) {
     this.bot = bot;
     this.commandTable = commandTable;
+    this.stateEntity2Repo = stateEntity2Repo;
   }
 
   /**
@@ -93,6 +98,7 @@ public class StateHandler {
       if (text.equals("/back")) {
         commandTable.handleBackCommand(messageUser);
       } else {
+
         bot.episode.setEpisode(text);
         if (bot.episode.getEpisode() != null && bot.episode.getEpisode().matches("[-+]?\\d+")) {
           HtmlParser htmlParser = new HtmlParser();
@@ -108,6 +114,8 @@ public class StateHandler {
           MakeKeyBoard keyBoard = new MakeKeyBoard();
           SendMessage message2;
           message2 = keyBoard.setButtons(sendMessage);
+          stateEntity2Repo.save(new StateEntity2(null,bot.story.getName(),
+                  bot.season.getSeason(),bot.episode.getEpisode()));
           bot.execute(message2);
         } else {
           SendMessage test = new SendMessage();
