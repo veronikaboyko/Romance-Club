@@ -1,6 +1,9 @@
 package org.example;
 
 import java.io.IOException;
+
+import org.example.jpa.StatEntityRespository;
+import org.example.jpa.StateEntity2Repo;
 import org.example.jpa.UserService;
 import org.example.telegram.TelegramBot;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +19,11 @@ import static org.example.model.StartBot.getFromProperty;
 public class AppConfig {
 
   @Bean
-  public TelegramBot registration(UserService service) throws IOException {
+  public TelegramBot registration(UserService service, StatEntityRespository respository,
+                                  StateEntity2Repo stateEntity2Repo) throws IOException {
     TelegramBot bot =
-        new TelegramBot(getFromProperty("config.properties", "token"), "Tutorial bot", service);
+        new TelegramBot(getFromProperty("config.properties", "token"), "Tutorial bot",
+                service, respository,stateEntity2Repo);
     try {
       new TelegramBotsApi(DefaultBotSession.class).registerBot(bot);
       System.out.println("Бот @" + bot.getBotUsername() + " успешно запущен!!!");

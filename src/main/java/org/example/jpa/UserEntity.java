@@ -3,16 +3,15 @@ package org.example.jpa;
 import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.checkerframework.checker.units.qual.C;
 import org.example.keyboard.FinalStateAutomate;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
 /**
  * класс пользователя для базы данных.
@@ -22,18 +21,30 @@ import org.example.keyboard.FinalStateAutomate;
 @Setter
 @Getter
 @NoArgsConstructor
-@Table(name = "TG_entity")
+@Table(name = "users")
+@TypeDef(name = "state_type", typeClass = StateType.class)
 public class UserEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "chatid")
   private Long chatId;
+  @Column(name = "subscribe")
   private Boolean subscribe;
+  @Column(name = "admin")
   private Boolean admin;
-  private FinalStateAutomate state = FinalStateAutomate.STORY;
+  @Enumerated(EnumType.STRING)
+  @Type(type = "state_type")
+  @Column(name = "cur_state")
+  private FinalStateAutomate state = FinalStateAutomate.START;
+  @Column(name = "timer")
   private Timestamp timer = Timestamp.from(Instant.now());
+  @Column(name = "themostlongtimer")
   private Long theMostLongTime = 0L;
+  @Enumerated(EnumType.STRING)
+  @Type(type = "state_type")
+  @Column(name = "statetimer")
   private FinalStateAutomate stateTimer;
 
   public void setState(FinalStateAutomate state) {
